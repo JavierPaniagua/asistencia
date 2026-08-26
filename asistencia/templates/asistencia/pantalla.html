@@ -1,0 +1,540 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sistema de Asistencia</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: linear-gradient(
+                135deg,
+                #083777,
+                #1f5fa8
+            );
+
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+        }
+
+        .pantalla {
+            width: 96%;
+            height: 96vh;
+
+            max-width: 1300px;
+
+            padding: 20px 45px;
+
+            border: 3px solid #ffd400;
+            border-radius: 35px;
+
+            background: rgba(255, 255, 255, 0.04);
+
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
+        }
+
+        /* LOGO */
+
+        .logo {
+            width: 150px;
+            height: 150px;
+
+            object-fit: contain;
+
+            display: block;
+
+            margin: 0 auto 10px auto;
+
+            background: transparent;
+
+            border: none;
+            padding: 0;
+
+            box-shadow: none;
+        }
+
+        /* COLEGIO */
+
+        .colegio {
+            font-size: 30px;
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            margin-top: 5px;
+        }
+
+        .luque {
+            color: #ffd400;
+
+            font-size: 25px;
+            font-weight: bold;
+
+            margin-top: 5px;
+        }
+
+        /* LINEA */
+
+        .linea {
+            width: 70%;
+            height: 3px;
+
+            background: #ffd400;
+
+            margin: 20px auto;
+
+            border-radius: 10px;
+        }
+
+        /* TITULO */
+
+        .titulo {
+            color: #ffd400;
+
+            font-size: 50px;
+            font-weight: 800;
+
+            margin-bottom: 10px;
+        }
+
+        /* ICONO */
+
+        .icono {
+            font-size: 75px;
+
+            margin: 15px 0 5px;
+        }
+
+        /* MENSAJE */
+
+        .mensaje {
+            font-size: 38px;
+            font-weight: bold;
+
+            margin-top: 5px;
+        }
+
+        .submensaje {
+            font-size: 25px;
+
+            margin-top: 10px;
+        }
+
+        /* RELOJ */
+
+        .reloj {
+            color: #ffd400;
+
+            font-size: 60px;
+            font-weight: bold;
+
+            margin-top: 25px;
+        }
+
+        .fecha {
+            font-size: 22px;
+
+            margin-top: 5px;
+        }
+
+        /* PIE */
+
+        .pie {
+            font-size: 18px;
+
+            margin-top: 25px;
+
+            opacity: 0.80;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-height: 750px) {
+
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .colegio {
+                font-size: 25px;
+            }
+
+            .luque {
+                font-size: 21px;
+            }
+
+            .titulo {
+                font-size: 42px;
+            }
+
+            .icono {
+                font-size: 60px;
+            }
+
+            .mensaje {
+                font-size: 31px;
+            }
+
+            .submensaje {
+                font-size: 21px;
+            }
+
+            .reloj {
+                font-size: 50px;
+            }
+
+            .linea {
+                margin: 14px auto;
+            }
+
+            .pie {
+                margin-top: 15px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="pantalla">
+
+    <!-- LOGO -->
+
+    <img
+        src="{% static 'asistencia/img/logo_cnl.png' %}"
+        class="logo"
+        alt="Logo del Colegio"
+    >
+
+
+    <!-- NOMBRE DEL COLEGIO -->
+
+    <div class="colegio">
+        Colegio Nacional Gral. José Elizardo Aquino
+    </div>
+
+
+    <div class="luque">
+        LUQUE
+    </div>
+
+
+    <div class="linea"></div>
+
+
+    <!-- TITULO -->
+
+    <div class="titulo">
+        SISTEMA DE ASISTENCIA
+    </div>
+
+
+    <!-- ICONO DINAMICO -->
+
+    <div
+        class="icono"
+        id="icono"
+    >
+        📡
+    </div>
+
+
+    <!-- MENSAJE DINAMICO -->
+
+    <div
+        class="mensaje"
+        id="mensaje"
+    >
+        Acerque su tarjeta RFID al lector
+    </div>
+
+
+    <div
+        class="submensaje"
+        id="submensaje"
+    >
+        Esperando identificación...
+    </div>
+
+
+    <!-- RELOJ -->
+
+    <div
+        class="reloj"
+        id="reloj"
+    >
+        --:--:--
+    </div>
+
+
+    <!-- FECHA -->
+
+    <div
+        class="fecha"
+        id="fecha"
+    >
+    </div>
+
+
+    <!-- PIE -->
+
+    <div class="pie">
+        Registro automático de asistencia
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =====================================================
+       RELOJ Y FECHA
+       ===================================================== */
+
+    function actualizarFechaHora() {
+
+        const ahora = new Date();
+
+
+        const hora = ahora.toLocaleTimeString(
+            "es-PY",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+
+        const fecha = ahora.toLocaleDateString(
+            "es-PY",
+            {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        );
+
+
+        document.getElementById(
+            "reloj"
+        ).textContent = hora;
+
+
+        document.getElementById(
+            "fecha"
+        ).textContent =
+            fecha.charAt(0).toUpperCase()
+            +
+            fecha.slice(1);
+    }
+
+
+    /* =====================================================
+       CONSULTAR DJANGO
+       ===================================================== */
+
+    async function consultarEstado() {
+
+        try {
+
+            /*
+            Agregamos timestamp para evitar
+            que el navegador use caché.
+            */
+
+            const respuesta = await fetch(
+                "/api/estado/?t=" + new Date().getTime(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            const icono =
+                document.getElementById("icono");
+
+
+            const mensaje =
+                document.getElementById("mensaje");
+
+
+            const submensaje =
+                document.getElementById("submensaje");
+
+
+            /* =============================================
+               ASISTENCIA REGISTRADA
+               ============================================= */
+
+            if (
+                datos.estado === "registrado"
+            ) {
+
+                icono.textContent =
+                    "✅";
+
+
+                mensaje.textContent =
+                    "¡BIENVENIDO, "
+                    +
+                    datos.nombre.toUpperCase()
+                    +
+                    "!";
+
+
+                submensaje.textContent =
+                    datos.curso
+                    +
+                    " — Asistencia registrada correctamente";
+
+            }
+
+
+            /* =============================================
+               ASISTENCIA DUPLICADA
+               ============================================= */
+
+            else if (
+                datos.estado === "duplicado"
+            ) {
+
+                icono.textContent =
+                    "⚠️";
+
+
+                mensaje.textContent =
+                    datos.nombre.toUpperCase();
+
+
+                submensaje.textContent =
+                    "Su asistencia ya fue registrada hoy";
+
+            }
+
+
+            /* =============================================
+               ERROR
+               ============================================= */
+
+            else if (
+                datos.estado === "error"
+            ) {
+
+                icono.textContent =
+                    "❌";
+
+
+                mensaje.textContent =
+                    "ALUMNO NO ENCONTRADO";
+
+
+                submensaje.textContent =
+                    "Consulte con el encargado";
+
+            }
+
+
+            /* =============================================
+               ESTADO DE ESPERA
+               ============================================= */
+
+            else {
+
+                icono.textContent =
+                    "📡";
+
+
+                mensaje.textContent =
+                    "Acerque su tarjeta RFID al lector";
+
+
+                submensaje.textContent =
+                    "Esperando identificación...";
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Error consultando estado:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       INICIAR
+       ===================================================== */
+
+    actualizarFechaHora();
+
+    consultarEstado();
+
+
+    /* Actualizar reloj cada segundo */
+
+    setInterval(
+        actualizarFechaHora,
+        1000
+    );
+
+
+    /*
+    Consultar Django cada segundo.
+    Esto permite detectar un RFID prácticamente
+    de forma inmediata.
+    */
+
+    setInterval(
+        consultarEstado,
+        1000
+    );
+
+</script>
+
+
+</body>
+
+</html>
