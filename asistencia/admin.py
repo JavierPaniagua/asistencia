@@ -1,21 +1,28 @@
 from django.contrib import admin
-from .models import Alumno, TarjetaRFID, Asistencia
 
+from .models import Alumno, Asistencia
+
+
+# ============================================================
+# ADMIN ALUMNOS
+# ============================================================
 
 @admin.register(Alumno)
 class AlumnoAdmin(admin.ModelAdmin):
+
     list_display = (
         "cedula",
-        "apellido",
         "nombre",
         "curso",
+        "uid_rfid",
         "activo",
     )
 
     search_fields = (
         "cedula",
-        "apellido",
         "nombre",
+        "curso",
+        "uid_rfid",
     )
 
     list_filter = (
@@ -23,41 +30,38 @@ class AlumnoAdmin(admin.ModelAdmin):
         "activo",
     )
 
-
-@admin.register(TarjetaRFID)
-class TarjetaRFIDAdmin(admin.ModelAdmin):
-    list_display = (
-        "uid",
-        "alumno",
-        "activa",
+    ordering = (
+        "nombre",
     )
 
-    search_fields = (
-        "uid",
-        "alumno__cedula",
-        "alumno__nombre",
-        "alumno__apellido",
-    )
 
-    list_filter = (
-        "activa",
-    )
-
+# ============================================================
+# ADMIN ASISTENCIAS
+# ============================================================
 
 @admin.register(Asistencia)
 class AsistenciaAdmin(admin.ModelAdmin):
+
     list_display = (
         "alumno",
         "fecha",
         "hora",
+        "estado",
     )
 
     search_fields = (
         "alumno__cedula",
         "alumno__nombre",
-        "alumno__apellido",
+        "alumno__uid_rfid",
     )
 
     list_filter = (
         "fecha",
+        "estado",
+        "alumno__curso",
+    )
+
+    ordering = (
+        "-fecha",
+        "-hora",
     )

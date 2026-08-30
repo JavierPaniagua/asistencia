@@ -1,536 +1,676 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Sistema de Asistencia</title>
 
     <style>
+
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        html,
         body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
 
-        body {
             font-family: Arial, Helvetica, sans-serif;
 
-            background: linear-gradient(
-                135deg,
-                #083777,
-                #1f5fa8
-            );
+            background:
+                linear-gradient(
+                    135deg,
+                    #003b7a,
+                    #0056a6
+                );
+
+            min-height: 100vh;
 
             color: white;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             overflow: hidden;
         }
 
-        .pantalla {
-            width: 96%;
-            height: 96vh;
 
-            max-width: 1300px;
+        /* ==========================================
+           CONTENEDOR
+        ========================================== */
 
-            padding: 20px 45px;
+        .contenedor {
 
-            border: 3px solid #ffd400;
-            border-radius: 35px;
+            width: 94%;
 
-            background: rgba(255, 255, 255, 0.04);
+            max-width: 1200px;
+
+            min-height: 90vh;
+
+            border: 5px solid #ffd700;
+
+            border-radius: 30px;
+
+            padding: 30px;
 
             text-align: center;
 
             display: flex;
+
             flex-direction: column;
+
             justify-content: center;
+
             align-items: center;
 
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
+            position: relative;
+
+            box-shadow:
+                0 0 40px rgba(0,0,0,0.4);
         }
 
-        /* LOGO */
 
-        .logo {
-            width: 150px;
-            height: 150px;
+        /* ==========================================
+           INSTITUCIÓN
+        ========================================== */
 
-            object-fit: contain;
+        .institucion {
 
-            display: block;
+            position: absolute;
 
-            margin: 0 auto 10px auto;
+            top: 25px;
 
-            background: transparent;
+            width: 100%;
 
-            border: none;
-            padding: 0;
-
-            box-shadow: none;
+            padding: 0 20px;
         }
 
-        /* COLEGIO */
+        .institucion h2 {
 
-        .colegio {
-            font-size: 30px;
-            font-weight: bold;
-
-            text-transform: uppercase;
-
-            margin-top: 5px;
-        }
-
-        .luque {
-            color: #ffd400;
+            color: #ffd700;
 
             font-size: 25px;
+
+            margin-bottom: 5px;
+        }
+
+        .institucion p {
+
+            font-size: 19px;
+
             font-weight: bold;
-
-            margin-top: 5px;
         }
 
-        /* LINEA */
 
-        .linea {
-            width: 70%;
-            height: 3px;
-
-            background: #ffd400;
-
-            margin: 20px auto;
-
-            border-radius: 10px;
-        }
-
-        /* TITULO */
+        /* ==========================================
+           TÍTULO
+        ========================================== */
 
         .titulo {
-            color: #ffd400;
 
-            font-size: 50px;
-            font-weight: 800;
+            font-size: 45px;
 
-            margin-bottom: 10px;
+            color: #ffd700;
+
+            margin-bottom: 25px;
         }
 
-        /* ICONO */
+
+        /* ==========================================
+           ICONO
+        ========================================== */
 
         .icono {
-            font-size: 75px;
 
-            margin: 15px 0 5px;
+            font-size: 100px;
+
+            margin-bottom: 20px;
         }
 
-        /* MENSAJE */
 
-        .mensaje {
-            font-size: 38px;
+        /* ==========================================
+           NOMBRE
+        ========================================== */
+
+        #nombre {
+
+            font-size: 55px;
+
             font-weight: bold;
 
-            margin-top: 5px;
+            margin-bottom: 15px;
+
+            text-transform: uppercase;
         }
 
-        .submensaje {
+
+        /* ==========================================
+           CURSO
+        ========================================== */
+
+        #curso {
+
+            font-size: 35px;
+
+            color: #ffd700;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* ==========================================
+           MENSAJE
+        ========================================== */
+
+        #mensaje {
+
+            font-size: 30px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ==========================================
+           HORA DEL REGISTRO
+        ========================================== */
+
+        #hora-registro {
+
             font-size: 25px;
 
             margin-top: 10px;
         }
 
-        /* RELOJ */
 
-        .reloj {
-            color: #ffd400;
+        /* ==========================================
+           RELOJ
+        ========================================== */
 
-            font-size: 60px;
+        #reloj {
+
+            position: absolute;
+
+            bottom: 55px;
+
+            font-size: 42px;
+
             font-weight: bold;
 
-            margin-top: 25px;
+            color: #ffd700;
         }
 
-        .fecha {
-            font-size: 22px;
 
-            margin-top: 5px;
+        #fecha {
+
+            position: absolute;
+
+            bottom: 25px;
+
+            font-size: 20px;
         }
 
-        /* PIE */
 
-        .pie {
-            font-size: 18px;
+        /* ==========================================
+           ESTADOS
+        ========================================== */
 
-            margin-top: 25px;
+        .correcto {
 
-            opacity: 0.80;
+            color: #ffffff;
         }
 
-        /* RESPONSIVE */
 
-        @media (max-height: 750px) {
+        .advertencia {
 
-            .logo {
-                width: 120px;
-                height: 120px;
+            color: #ffd700;
+        }
+
+
+        .error {
+
+            color: #ffdddd;
+        }
+
+
+        /* ==========================================
+           ANIMACIÓN
+        ========================================== */
+
+        .animacion {
+
+            animation: aparecer 0.5s ease;
+        }
+
+
+        @keyframes aparecer {
+
+            from {
+
+                opacity: 0;
+
+                transform: scale(0.85);
             }
 
-            .colegio {
-                font-size: 25px;
-            }
+            to {
 
-            .luque {
-                font-size: 21px;
-            }
+                opacity: 1;
 
-            .titulo {
-                font-size: 42px;
-            }
-
-            .icono {
-                font-size: 60px;
-            }
-
-            .mensaje {
-                font-size: 31px;
-            }
-
-            .submensaje {
-                font-size: 21px;
-            }
-
-            .reloj {
-                font-size: 50px;
-            }
-
-            .linea {
-                margin: 14px auto;
-            }
-
-            .pie {
-                margin-top: 15px;
+                transform: scale(1);
             }
         }
+
     </style>
 
 </head>
 
+
 <body>
 
-<div class="pantalla">
 
-    <!-- LOGO -->
-
-    <img
-        src="{% static 'asistencia/img/logo_cnl.png' %}"
-        class="logo"
-        alt="Logo del Colegio"
-    >
+<div class="contenedor">
 
 
-    <!-- NOMBRE DEL COLEGIO -->
+    <!-- INSTITUCIÓN -->
 
-    <div class="colegio">
-        Colegio Nacional Gral. José Elizardo Aquino
+    <div class="institucion">
+
+        <h2>
+            COLEGIO NACIONAL
+        </h2>
+
+        <p>
+            GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
+        </p>
+
     </div>
 
 
-    <div class="luque">
-        LUQUE
+
+    <!-- CONTENIDO PRINCIPAL -->
+
+    <div id="contenido">
+
+
+        <h1 class="titulo">
+            SISTEMA DE ASISTENCIA
+        </h1>
+
+
+        <div
+            id="icono"
+            class="icono"
+        >
+            📡
+        </div>
+
+
+        <div id="nombre">
+
+            Acerque su tarjeta RFID
+
+        </div>
+
+
+        <div id="curso">
+
+        </div>
+
+
+        <div id="mensaje">
+
+            Esperando identificación...
+
+        </div>
+
+
+        <div id="hora-registro">
+
+        </div>
+
+
     </div>
 
-
-    <div class="linea"></div>
-
-
-    <!-- TITULO -->
-
-    <div class="titulo">
-        SISTEMA DE ASISTENCIA
-    </div>
-
-
-    <!-- ICONO DINAMICO -->
-
-    <div
-        class="icono"
-        id="icono"
-    >
-        📡
-    </div>
-
-
-    <!-- MENSAJE DINAMICO -->
-
-    <div
-        class="mensaje"
-        id="mensaje"
-    >
-        Acerque su tarjeta RFID al lector
-    </div>
-
-
-    <div
-        class="submensaje"
-        id="submensaje"
-    >
-        Esperando identificación...
-    </div>
 
 
     <!-- RELOJ -->
 
-    <div
-        class="reloj"
-        id="reloj"
-    >
-        --:--:--
+    <div id="reloj">
+
+        00:00:00
+
     </div>
 
 
-    <!-- FECHA -->
+    <div id="fecha">
 
-    <div
-        class="fecha"
-        id="fecha"
-    >
     </div>
 
-
-    <!-- PIE -->
-
-    <div class="pie">
-        Registro automático de asistencia
-    </div>
 
 </div>
 
 
+
 <script>
 
-    /* =====================================================
-       RELOJ Y FECHA
-       ===================================================== */
 
-    function actualizarFechaHora() {
+// ============================================================
+// VARIABLES
+// ============================================================
 
-        const ahora = new Date();
+let ultimoEvento = 0;
 
-
-        const hora = ahora.toLocaleTimeString(
-            "es-PY",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }
-        );
+let temporizador = null;
 
 
-        const fecha = ahora.toLocaleDateString(
-            "es-PY",
-            {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-            }
-        );
+// ============================================================
+// RELOJ
+// ============================================================
+
+function actualizarReloj() {
+
+    const ahora = new Date();
 
 
-        document.getElementById(
-            "reloj"
-        ).textContent = hora;
+    const hora = ahora.toLocaleTimeString(
+        "es-PY",
+        {
+            hour12: false
+        }
+    );
 
 
-        document.getElementById(
-            "fecha"
-        ).textContent =
-            fecha.charAt(0).toUpperCase()
-            +
-            fecha.slice(1);
+    const fecha = ahora.toLocaleDateString(
+        "es-PY",
+        {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        }
+    );
+
+
+    document.getElementById(
+        "reloj"
+    ).textContent = hora;
+
+
+    document.getElementById(
+        "fecha"
+    ).textContent = fecha;
+
+}
+
+
+setInterval(
+    actualizarReloj,
+    1000
+);
+
+
+actualizarReloj();
+
+
+// ============================================================
+// PANTALLA DE ESPERA
+// ============================================================
+
+function mostrarEspera() {
+
+
+    document.getElementById(
+        "icono"
+    ).textContent = "📡";
+
+
+    document.getElementById(
+        "nombre"
+    ).textContent =
+        "Acerque su tarjeta RFID";
+
+
+    document.getElementById(
+        "curso"
+    ).textContent = "";
+
+
+    document.getElementById(
+        "mensaje"
+    ).textContent =
+        "Esperando identificación...";
+
+
+    document.getElementById(
+        "hora-registro"
+    ).textContent = "";
+
+
+    document.getElementById(
+        "contenido"
+    ).className = "animacion";
+}
+
+
+// ============================================================
+// MOSTRAR REGISTRO
+// ============================================================
+
+function mostrarRegistro(data) {
+
+
+    const icono =
+        document.getElementById("icono");
+
+    const nombre =
+        document.getElementById("nombre");
+
+    const curso =
+        document.getElementById("curso");
+
+    const mensaje =
+        document.getElementById("mensaje");
+
+    const horaRegistro =
+        document.getElementById("hora-registro");
+
+
+
+    // --------------------------------------------------------
+    // REGISTRADO CORRECTAMENTE
+    // --------------------------------------------------------
+
+    if (data.estado === "registrado") {
+
+
+        icono.textContent = "✅";
+
+
+        nombre.textContent =
+            data.nombre;
+
+
+        curso.textContent =
+            data.curso;
+
+
+        mensaje.textContent =
+            "¡BIENVENIDO! " + data.mensaje;
+
+
+        mensaje.className =
+            "correcto";
+
+
+        horaRegistro.textContent =
+            "Hora de entrada: " + data.hora;
     }
 
 
-    /* =====================================================
-       CONSULTAR DJANGO
-       ===================================================== */
+    // --------------------------------------------------------
+    // YA REGISTRADO
+    // --------------------------------------------------------
 
-    async function consultarEstado() {
-
-        try {
-
-            /*
-            Agregamos timestamp para evitar
-            que el navegador use caché.
-            */
-
-            const respuesta = await fetch(
-                "/api/estado/?t=" + new Date().getTime(),
-                {
-                    cache: "no-store"
-                }
-            );
+    else if (
+        data.estado === "ya_registrado"
+    ) {
 
 
-            const datos =
-                await respuesta.json();
+        icono.textContent = "⚠️";
 
 
-            const icono =
-                document.getElementById("icono");
+        nombre.textContent =
+            data.nombre;
 
 
-            const mensaje =
-                document.getElementById("mensaje");
+        curso.textContent =
+            data.curso;
 
 
-            const submensaje =
-                document.getElementById("submensaje");
+        mensaje.textContent =
+            "Su asistencia ya fue registrada hoy";
 
 
-            /* =============================================
-               ASISTENCIA REGISTRADA
-               ============================================= */
+        mensaje.className =
+            "advertencia";
+
+
+        horaRegistro.textContent =
+            "Registrado a las: " + data.hora;
+    }
+
+
+    // --------------------------------------------------------
+    // TARJETA DESCONOCIDA
+    // --------------------------------------------------------
+
+    else if (
+        data.estado === "no_encontrado"
+    ) {
+
+
+        icono.textContent = "❌";
+
+
+        nombre.textContent =
+            "TARJETA NO REGISTRADA";
+
+
+        curso.textContent = "";
+
+
+        mensaje.textContent =
+            "Comuníquese con el encargado";
+
+
+        mensaje.className =
+            "error";
+
+
+        horaRegistro.textContent =
+            "UID: " + data.uid;
+    }
+
+
+    document.getElementById(
+        "contenido"
+    ).className = "animacion";
+
+
+    // --------------------------------------------------------
+    // VOLVER A ESPERA DESPUÉS DE 5 SEGUNDOS
+    // --------------------------------------------------------
+
+    clearTimeout(
+        temporizador
+    );
+
+
+    temporizador = setTimeout(
+        mostrarEspera,
+        5000
+    );
+
+}
+
+
+// ============================================================
+// CONSULTAR DJANGO
+// ============================================================
+
+async function consultarEstado() {
+
+
+    try {
+
+
+        const respuesta = await fetch(
+            "/api/estado/",
+            {
+                cache: "no-store"
+            }
+        );
+
+
+        const data =
+            await respuesta.json();
+
+
+        // Solo actuar ante una lectura nueva
+
+        if (
+            data.evento_id &&
+            data.evento_id !== ultimoEvento
+        ) {
+
+
+            ultimoEvento =
+                data.evento_id;
+
 
             if (
-                datos.estado === "registrado"
+                data.estado !== "esperando"
             ) {
 
-                icono.textContent =
-                    "✅";
-
-
-                mensaje.textContent =
-                    "¡BIENVENIDO, "
-                    +
-                    datos.nombre.toUpperCase()
-                    +
-                    "!";
-
-
-                submensaje.textContent =
-                    datos.curso
-                    +
-                    " — Asistencia registrada correctamente";
-
+                mostrarRegistro(
+                    data
+                );
             }
-
-
-            /* =============================================
-               ASISTENCIA DUPLICADA
-               ============================================= */
-
-            else if (
-                datos.estado === "duplicado"
-            ) {
-
-                icono.textContent =
-                    "⚠️";
-
-
-                mensaje.textContent =
-                    datos.nombre.toUpperCase();
-
-
-                submensaje.textContent =
-                    "Su asistencia ya fue registrada hoy";
-
-            }
-
-
-            /* =============================================
-               ERROR
-               ============================================= */
-
-            else if (
-                datos.estado === "error"
-            ) {
-
-                icono.textContent =
-                    "❌";
-
-
-                mensaje.textContent =
-                    "ALUMNO NO ENCONTRADO";
-
-
-                submensaje.textContent =
-                    "Consulte con el encargado";
-
-            }
-
-
-            /* =============================================
-               ESTADO DE ESPERA
-               ============================================= */
-
-            else {
-
-                icono.textContent =
-                    "📡";
-
-
-                mensaje.textContent =
-                    "Acerque su tarjeta RFID al lector";
-
-
-                submensaje.textContent =
-                    "Esperando identificación...";
-
-            }
-
         }
 
-        catch (error) {
 
-            console.log(
-                "Error consultando estado:",
-                error
-            );
+    } catch (error) {
 
-        }
-
+        console.log(
+            "Error consultando Django:",
+            error
+        );
     }
 
-
-    /* =====================================================
-       INICIAR
-       ===================================================== */
-
-    actualizarFechaHora();
-
-    consultarEstado();
+}
 
 
-    /* Actualizar reloj cada segundo */
+// Consultar aproximadamente dos veces por segundo
 
-    setInterval(
-        actualizarFechaHora,
-        1000
-    );
+setInterval(
+    consultarEstado,
+    700
+);
 
 
-    /*
-    Consultar Django cada segundo.
-    Esto permite detectar un RFID prácticamente
-    de forma inmediata.
-    */
+consultarEstado();
 
-    setInterval(
-        consultarEstado,
-        1000
-    );
 
 </script>
 
