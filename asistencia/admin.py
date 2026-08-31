@@ -2,10 +2,10 @@ from django.contrib import admin
 
 from .models import (
     Alumno,
-    Asistencia,
     Materia,
     HorarioClase,
     ClaseActiva,
+    Asistencia,
 )
 
 
@@ -26,22 +26,25 @@ class AlumnoAdmin(admin.ModelAdmin):
         "activo",
     )
 
-    list_filter = (
-        "activo",
-        "turno",
-    )
-
     search_fields = (
         "cedula",
-        "nombres",
         "apellidos",
+        "nombres",
         "uid_rfid",
+    )
+
+    list_filter = (
+        "curso",
+        "turno",
+        "activo",
     )
 
     ordering = (
         "apellidos",
         "nombres",
     )
+
+    list_per_page = 50
 
 
 # ============================================================
@@ -52,17 +55,16 @@ class AlumnoAdmin(admin.ModelAdmin):
 class MateriaAdmin(admin.ModelAdmin):
 
     list_display = (
-        "id",
         "nombre",
-        "activo",
-    )
-
-    list_filter = (
         "activo",
     )
 
     search_fields = (
         "nombre",
+    )
+
+    list_filter = (
+        "activo",
     )
 
     ordering = (
@@ -71,7 +73,7 @@ class MateriaAdmin(admin.ModelAdmin):
 
 
 # ============================================================
-# HORARIOS
+# HORARIOS DE CLASE
 # ============================================================
 
 @admin.register(HorarioClase)
@@ -79,18 +81,18 @@ class HorarioClaseAdmin(admin.ModelAdmin):
 
     list_display = (
         "anio_lectivo",
+        "curso",
         "dia_semana",
         "hora_inicio",
         "hora_fin",
-        "curso",
         "materia",
         "activo",
     )
 
     list_filter = (
         "anio_lectivo",
-        "dia_semana",
         "curso",
+        "dia_semana",
         "materia",
         "activo",
     )
@@ -107,14 +109,13 @@ class HorarioClaseAdmin(admin.ModelAdmin):
 
 
 # ============================================================
-# CLASE MANUAL
+# CLASES ACTIVAS
 # ============================================================
 
 @admin.register(ClaseActiva)
 class ClaseActivaAdmin(admin.ModelAdmin):
 
     list_display = (
-        "id",
         "materia",
         "activa",
         "iniciada",
@@ -126,6 +127,10 @@ class ClaseActivaAdmin(admin.ModelAdmin):
         "materia",
     )
 
+    search_fields = (
+        "materia__nombre",
+    )
+
     ordering = (
         "-iniciada",
     )
@@ -133,33 +138,54 @@ class ClaseActivaAdmin(admin.ModelAdmin):
 
 # ============================================================
 # ASISTENCIAS
+#
+# NUEVA LÓGICA:
+# - UNA ENTRADA POR DÍA
+# - UNA SALIDA POR DÍA
 # ============================================================
 
 @admin.register(Asistencia)
 class AsistenciaAdmin(admin.ModelAdmin):
 
     list_display = (
+        "fecha",
         "alumno",
-        "materia",
-        "fecha",
-        "hora",
-    )
-
-    list_filter = (
-        "materia",
-        "fecha",
+        "hora_entrada",
+        "hora_salida",
+        "estado_jornada",
     )
 
     search_fields = (
         "alumno__cedula",
-        "alumno__nombres",
         "alumno__apellidos",
-        "materia__nombre",
+        "alumno__nombres",
     )
 
-    date_hierarchy = "fecha"
+    list_filter = (
+        "fecha",
+        "alumno__curso",
+    )
 
     ordering = (
         "-fecha",
-        "-hora",
+        "hora_entrada",
     )
+
+    readonly_fields = (
+        "estado_jornada",
+    )
+
+    list_per_page = 50
+
+    @admin.display(
+        description="Estado"
+    )
+    def estado_jornada(self, obj):
+
+        if obj.hora_entrada and obj.hora_salida:
+            return "JORNADA COMPLETA"
+
+        if obj.hora_entrada:
+            return "EN EL COLEGIO"
+
+        return "SIN REGISTRO"
