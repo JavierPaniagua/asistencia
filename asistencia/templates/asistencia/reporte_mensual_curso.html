@@ -1,6 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
@@ -12,20 +13,32 @@
         content="width=device-width, initial-scale=1"
     >
 
-    <title>Planilla mensual de asistencia</title>
+    <title>
+        Planilla mensual de asistencia
+    </title>
+
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+
     <style>
 
         body {
+
             background: #f4f6f9;
+
         }
 
+
+        /* ====================================================
+           ENCABEZADO
+           ==================================================== */
+
         .encabezado {
+
             background: linear-gradient(
                 135deg,
                 #052b68,
@@ -33,88 +46,390 @@
             );
 
             color: white;
+
             padding: 20px;
+
             border-radius: 12px;
+
         }
+
 
         .logo {
+
             width: 85px;
+
             height: 85px;
+
             object-fit: contain;
+
+            display: block;
+
+            margin-left: auto;
+
+            margin-right: auto;
+
         }
+
+
+        /* ====================================================
+           TABLA
+           ==================================================== */
 
         .tabla-contenedor {
+
             overflow-x: auto;
+
         }
+
 
         table {
+
             white-space: nowrap;
-            font-size: 13px;
+
+            font-size: 12px;
+
         }
+
 
         th {
+
             text-align: center;
+
             vertical-align: middle;
+
         }
+
 
         td {
+
             vertical-align: middle;
+
         }
+
 
         .nombre-alumno {
+
             min-width: 260px;
+
         }
 
-        .presente {
-            background-color: #d1e7dd !important;
+
+        .celda-dia {
+
+            min-width: 38px;
+
             text-align: center;
+
             font-weight: bold;
+
         }
+
+
+        /* ====================================================
+           ESTADOS
+           ==================================================== */
+
+        .presente,
+        .completo {
+
+            background-color: #d1e7dd !important;
+
+            color: #146c43;
+
+            text-align: center;
+
+            font-weight: bold;
+
+        }
+
 
         .ausente {
+
             background-color: #f8d7da !important;
+
+            color: #b02a37;
+
             text-align: center;
+
             font-weight: bold;
+
         }
+
 
         .pendiente {
+
             background-color: #fff3cd !important;
+
+            color: #664d03;
+
             text-align: center;
+
+            font-weight: bold;
+
         }
 
-        .fecha-clase {
-            min-width: 85px;
-        }
+
+        /* ====================================================
+           IMPRESIÓN
+           HOJA OFICIO HORIZONTAL
+           13 X 8.5 PULGADAS
+           ==================================================== */
 
         @media print {
 
-            body {
-                background: white;
-                font-size: 10px;
-            }
-
-            .no-imprimir {
-                display: none !important;
-            }
-
-            .encabezado {
-                background: white !important;
-                color: black !important;
-                border: none;
-                padding: 0;
-            }
-
-            .container-fluid {
-                max-width: 100%;
-            }
-
-            table {
-                font-size: 9px;
-            }
 
             @page {
-                size: landscape;
-                margin: 8mm;
+
+                size: 13in 8.5in;
+
+                margin: 5mm;
+
+            }
+
+
+            html,
+            body {
+
+                width: 100%;
+
+                margin: 0 !important;
+
+                padding: 0 !important;
+
+                background: white !important;
+
+                font-size: 8px;
+
+            }
+
+
+            .no-imprimir {
+
+                display: none !important;
+
+            }
+
+
+            .container-fluid {
+
+                width: 100% !important;
+
+                max-width: none !important;
+
+                margin: 0 !important;
+
+                padding: 0 !important;
+
+            }
+
+
+            /* ENCABEZADO IMPRESIÓN */
+
+            .encabezado {
+
+                background: white !important;
+
+                color: black !important;
+
+                border: none !important;
+
+                padding: 0 !important;
+
+                margin: 0 0 4px 0 !important;
+
+                text-align: center !important;
+
+            }
+
+
+            .logo {
+
+                width: 40px !important;
+
+                height: 40px !important;
+
+                margin: 0 auto 2px auto !important;
+
+            }
+
+
+            .encabezado h5 {
+
+                font-size: 9px !important;
+
+                line-height: 1 !important;
+
+                margin: 0 !important;
+
+            }
+
+
+            .encabezado h2 {
+
+                font-size: 12px !important;
+
+                margin: 2px 0 0 0 !important;
+
+                font-weight: bold;
+
+            }
+
+
+            /* TARJETAS */
+
+            .card {
+
+                border: none !important;
+
+                box-shadow: none !important;
+
+            }
+
+
+            .card-body {
+
+                padding: 1px !important;
+
+            }
+
+
+            .datos-reporte {
+
+                margin-bottom: 3px !important;
+
+                font-size: 7px !important;
+
+            }
+
+
+            /* TABLA */
+
+            .tabla-contenedor {
+
+                overflow: visible !important;
+
+            }
+
+
+            table {
+
+                width: 100% !important;
+
+                table-layout: fixed !important;
+
+                border-collapse: collapse !important;
+
+                margin: 0 !important;
+
+                font-size: 5.8px !important;
+
+                white-space: normal !important;
+
+            }
+
+
+            thead {
+
+                display: table-header-group;
+
+            }
+
+
+            tr {
+
+                page-break-inside: avoid !important;
+
+            }
+
+
+            th,
+            td {
+
+                border: 1px solid #000 !important;
+
+                padding: 1px !important;
+
+                line-height: 1 !important;
+
+                vertical-align: middle !important;
+
+            }
+
+
+            th {
+
+                background: #e9ecef !important;
+
+                color: black !important;
+
+                text-align: center !important;
+
+                font-weight: bold;
+
+                -webkit-print-color-adjust: exact;
+
+                print-color-adjust: exact;
+
+            }
+
+
+            th:nth-child(1),
+            td:nth-child(1) {
+
+                width: 18px !important;
+
+            }
+
+
+            th:nth-child(2),
+            td:nth-child(2) {
+
+                width: 43px !important;
+
+            }
+
+
+            th:nth-child(3),
+            td:nth-child(3) {
+
+                width: 120px !important;
+
+                white-space: normal !important;
+
+                font-size: 5.7px !important;
+
+            }
+
+
+            .nombre-alumno {
+
+                min-width: 0 !important;
+
+            }
+
+
+            .celda-dia {
+
+                min-width: 0 !important;
+
+                width: auto !important;
+
+                font-size: 5.5px !important;
+
+            }
+
+
+            .presente,
+            .completo,
+            .ausente,
+            .pendiente {
+
+                color: black !important;
+
+                -webkit-print-color-adjust: exact;
+
+                print-color-adjust: exact;
+
             }
 
         }
@@ -123,67 +438,81 @@
 
 </head>
 
+
 <body>
+
 
 <div class="container-fluid py-4">
 
+
     <!-- =====================================================
          ENCABEZADO
-    ====================================================== -->
+         ===================================================== -->
 
     <div class="encabezado mb-4">
 
-        <div class="row align-items-center">
+        <div class="text-center">
 
-            <div class="col-auto">
 
-                <img
-                    src="{% static 'asistencia/img/logo_colegio.png' %}"
-                    class="logo"
-                    alt="Logo"
-                >
+            <img
+                src="{% static 'asistencia/img/logo_colegio.png' %}"
+                class="logo mb-2"
+                alt="Logo del colegio"
+            >
 
-            </div>
 
-            <div class="col text-center">
+            <h5 class="mb-1">
 
-                <h5 class="mb-1">
-                    COLEGIO NACIONAL
-                </h5>
+                COLEGIO NACIONAL
 
-                <h5>
-                    GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
-                </h5>
+            </h5>
 
-                <h2 class="mt-3 mb-0">
-                    PLANILLA MENSUAL DE ASISTENCIA
-                </h2>
 
-            </div>
+            <h5 class="mb-1">
+
+                GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
+
+            </h5>
+
+
+            <h2 class="mt-2 mb-0">
+
+                PLANILLA MENSUAL DE ASISTENCIA
+
+            </h2>
+
 
         </div>
 
     </div>
 
 
+
     <!-- =====================================================
          FILTROS
-    ====================================================== -->
+         ===================================================== -->
 
     <div class="card shadow-sm mb-4 no-imprimir">
 
         <div class="card-body">
+
 
             <form
                 method="GET"
                 class="row g-3 align-items-end"
             >
 
+
+                <!-- CURSO -->
+
                 <div class="col-md-3">
 
-                    <label class="form-label">
+                    <label
+                        class="form-label fw-bold"
+                    >
                         Curso
                     </label>
+
 
                     <select
                         name="curso"
@@ -194,7 +523,9 @@
 
                             <option
                                 value="{{ c }}"
-                                {% if c == curso %}selected{% endif %}
+                                {% if c == curso %}
+                                    selected
+                                {% endif %}
                             >
                                 {{ c }}
                             </option>
@@ -206,40 +537,17 @@
                 </div>
 
 
+
+                <!-- MES -->
+
                 <div class="col-md-3">
 
-                    <label class="form-label">
-                        Materia
-                    </label>
-
-                    <select
-                        name="materia"
-                        class="form-select"
+                    <label
+                        class="form-label fw-bold"
                     >
-
-                        {% for m in materias %}
-
-                            <option
-                                value="{{ m.id }}"
-                                {% if materia and m.id == materia.id %}
-                                    selected
-                                {% endif %}
-                            >
-                                {{ m.nombre }}
-                            </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-
-                <div class="col-md-2">
-
-                    <label class="form-label">
                         Mes
                     </label>
+
 
                     <select
                         name="mes"
@@ -250,7 +558,9 @@
 
                             <option
                                 value="{{ numero }}"
-                                {% if numero == mes %}selected{% endif %}
+                                {% if numero == mes %}
+                                    selected
+                                {% endif %}
                             >
                                 {{ nombre }}
                             </option>
@@ -262,32 +572,46 @@
                 </div>
 
 
-                <div class="col-md-2">
 
-                    <label class="form-label">
+                <!-- AÑO -->
+
+                <div class="col-md-3">
+
+                    <label
+                        class="form-label fw-bold"
+                    >
                         Año
                     </label>
+
 
                     <input
                         type="number"
                         name="anio"
                         value="{{ anio }}"
+                        min="2020"
+                        max="2100"
                         class="form-control"
                     >
 
                 </div>
 
 
-                <div class="col-md-2">
+
+                <!-- CONSULTAR -->
+
+                <div class="col-md-3">
 
                     <button
-                        class="btn btn-primary w-100"
                         type="submit"
+                        class="btn btn-primary w-100"
                     >
-                        Consultar
+
+                        🔍 Consultar
+
                     </button>
 
                 </div>
+
 
             </form>
 
@@ -296,48 +620,63 @@
     </div>
 
 
-    <!-- =====================================================
-         INFORMACIÓN DEL REPORTE
-    ====================================================== -->
 
-    <div class="card shadow-sm mb-4">
+    <!-- =====================================================
+         DATOS DEL REPORTE
+         ===================================================== -->
+
+    <div
+        class="card shadow-sm mb-3 datos-reporte"
+    >
 
         <div class="card-body">
 
             <div class="row">
 
+
                 <div class="col-md-3">
-                    <strong>CURSO:</strong>
+
+                    <strong>
+                        CURSO:
+                    </strong>
+
                     {{ curso }}
+
                 </div>
 
-                <div class="col-md-3">
-                    <strong>MATERIA:</strong>
-
-                    {% if materia %}
-                        {{ materia.nombre }}
-                    {% endif %}
-                </div>
 
                 <div class="col-md-3">
-                    <strong>MES:</strong>
+
+                    <strong>
+                        MES:
+                    </strong>
+
                     {{ nombre_mes }}
+
                 </div>
+
 
                 <div class="col-md-3">
-                    <strong>AÑO:</strong>
+
+                    <strong>
+                        AÑO:
+                    </strong>
+
                     {{ anio }}
+
                 </div>
 
-            </div>
 
-            <div class="mt-2">
+                <div class="col-md-3">
 
-                <strong>
-                    CLASES PROGRAMADAS:
-                </strong>
+                    <strong>
+                        TOTAL ALUMNOS:
+                    </strong>
 
-                {{ total_clases }}
+                    {{ total_alumnos }}
+
+                </div>
+
 
             </div>
 
@@ -346,223 +685,302 @@
     </div>
 
 
+
     <!-- =====================================================
          PLANILLA
-    ====================================================== -->
+         ===================================================== -->
 
     <div class="card shadow-sm">
 
-        <div class="card-body tabla-contenedor">
+
+        <div
+            class="card-body tabla-contenedor"
+        >
+
 
             <table
-                class="table table-bordered table-striped"
+                class="table table-bordered table-hover"
             >
+
 
                 <thead class="table-dark">
 
+
                     <tr>
+
 
                         <th>
                             N°
                         </th>
 
+
                         <th>
-                            CÉDULA
+                            C.I.
                         </th>
+
 
                         <th class="nombre-alumno">
                             ALUMNO
                         </th>
 
-                        {% for sesion in sesiones %}
 
-                            <th class="fecha-clase">
+                        {% for dia in dias %}
 
-                                {{ sesion.fecha|date:"d/m" }}
+                            <th
+                                class="celda-dia"
+                                title="{{ dia.fecha|date:'d/m/Y' }}"
+                            >
+
+                                {{ dia.numero }}
 
                                 <br>
 
                                 <small>
-                                    {{ sesion.horario.hora_inicio|time:"H:i" }}
+                                    {{ dia.dia_semana }}
                                 </small>
 
                             </th>
 
                         {% endfor %}
 
+
                         <th>
                             P
                         </th>
+
 
                         <th>
                             A
                         </th>
 
+
                         <th>
                             %
                         </th>
 
+
                     </tr>
+
 
                 </thead>
 
 
                 <tbody>
 
+
                     {% for fila in filas %}
+
 
                         <tr>
 
+
                             <td class="text-center">
+
                                 {{ fila.numero }}
+
                             </td>
 
+
                             <td>
+
                                 {{ fila.alumno.cedula }}
+
                             </td>
 
+
                             <td>
-                                {{ fila.alumno.apellidos }},
-                                {{ fila.alumno.nombres }}
+
+                                <strong>
+
+                                    {{ fila.alumno.apellidos }},
+                                    {{ fila.alumno.nombres }}
+
+                                </strong>
+
                             </td>
 
 
                             {% for celda in fila.celdas %}
 
-                                {% if celda.estado == "PRESENTE" %}
 
-                                    <td class="presente">
+                                {% if celda.estado == "COMPLETO" %}
 
-                                        {{ celda.hora }}
-
+                                    <td
+                                        class="completo celda-dia"
+                                        title="Jornada completa"
+                                    >
+                                        P
                                     </td>
+
+
+                                {% elif celda.estado == "PRESENTE" %}
+
+                                    <td
+                                        class="presente celda-dia"
+                                        title="Entrada registrada"
+                                    >
+                                        P
+                                    </td>
+
 
                                 {% elif celda.estado == "AUSENTE" %}
 
-                                    <td class="ausente">
-
+                                    <td
+                                        class="ausente celda-dia"
+                                        title="Ausente"
+                                    >
                                         A
-
                                     </td>
+
 
                                 {% else %}
 
-                                    <td class="pendiente">
-
+                                    <td
+                                        class="pendiente celda-dia"
+                                        title="Fecha pendiente"
+                                    >
                                         -
-
                                     </td>
 
+
                                 {% endif %}
+
 
                             {% endfor %}
 
 
-                            <td class="text-center fw-bold">
-
+                            <td
+                                class="text-center fw-bold"
+                            >
                                 {{ fila.presentes }}
-
                             </td>
 
 
-                            <td class="text-center fw-bold">
-
+                            <td
+                                class="text-center fw-bold"
+                            >
                                 {{ fila.ausentes }}
-
                             </td>
 
 
-                            <td class="text-center fw-bold">
-
+                            <td
+                                class="text-center fw-bold"
+                            >
                                 {{ fila.porcentaje }}%
-
                             </td>
+
 
                         </tr>
 
+
                     {% empty %}
+
 
                         <tr>
 
                             <td
-                                colspan="20"
-                                class="text-center"
+                                colspan="40"
+                                class="text-center py-4"
                             >
 
-                                No existen alumnos para este curso.
+                                No existen alumnos
+                                para este curso.
 
                             </td>
 
                         </tr>
 
+
                     {% endfor %}
+
 
                 </tbody>
 
+
             </table>
+
 
         </div>
 
     </div>
 
 
+
     <!-- =====================================================
          LEYENDA
-    ====================================================== -->
+         ===================================================== -->
 
-    <div class="mt-3">
+    <div class="mt-3 no-imprimir">
+
 
         <span class="badge text-bg-success">
-            Hora = Presente
+
+            P = Presente
+
         </span>
+
 
         <span class="badge text-bg-danger">
+
             A = Ausente
+
         </span>
 
+
         <span class="badge text-bg-warning">
-            - = Clase pendiente
+
+            - = Fecha pendiente
+
         </span>
+
 
     </div>
 
 
+
     <!-- =====================================================
          BOTONES
-    ====================================================== -->
+         ===================================================== -->
 
     <div class="mt-4 no-imprimir">
+
 
         <button
             onclick="window.print()"
             class="btn btn-success"
         >
+
             🖨️ Imprimir planilla
+
         </button>
 
-        <a
-    href="{% url 'exportar_reporte_mensual_excel' %}?curso={{ curso|urlencode }}&materia={{ materia.id }}&mes={{ mes }}&anio={{ anio }}"
-    class="btn btn-primary"
->
-    📊 Exportar a Excel
-</a>
 
-<a
-    href="{% url 'exportar_reporte_mensual_pdf' %}?curso={{ curso|urlencode }}&materia={{ materia.id }}&mes={{ mes }}&anio={{ anio }}"
-    class="btn btn-danger"
->
-    📄 Exportar PDF
-</a>
+        <a
+            href="{% url 'exportar_reporte_mensual_excel' %}?curso={{ curso|urlencode }}&mes={{ mes }}&anio={{ anio }}"
+            class="btn btn-primary"
+        >
+
+            📊 Exportar a Excel
+
+        </a>
+
+
         <a
             href="/reportes/"
             class="btn btn-secondary"
         >
+
             ← Volver a reportes
+
         </a>
+
 
     </div>
 
+
 </div>
 
+
 </body>
+
 </html>
