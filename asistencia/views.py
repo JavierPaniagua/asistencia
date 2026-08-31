@@ -10,6 +10,23 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 
+from io import BytesIO
+
+from django.contrib.staticfiles import finders
+
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer,
+    Image,
+)
+
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
@@ -409,7 +426,7 @@ def registrar_rfid(request):
                 timezone.localdate()
                 .strftime("%d/%m/%Y")
             ),
-            "hora": agora_hora(ahora),
+            "hora": obtener_hora_texto(ahora),
             "hora_entrada": "",
             "hora_salida": "",
             "mensaje": "UID RFID no recibido",
@@ -462,7 +479,7 @@ def registrar_rfid(request):
                 timezone.localdate()
                 .strftime("%d/%m/%Y")
             ),
-            "hora": agora_hora(ahora),
+            "hora": obtener_hora_texto(ahora),
             "hora_entrada": "",
             "hora_salida": "",
             "mensaje": (
@@ -496,17 +513,6 @@ def obtener_hora_texto(ahora):
 
     return (
         ahora
-        .time()
-        .replace(
-            microsecond=0
-        )
-        .strftime(
-            "%H:%M:%S"
-        )
-    )
-
-    return (
-        agora
         .time()
         .replace(
             microsecond=0
@@ -1039,6 +1045,8 @@ def reporte_mensual_curso(request):
 
         celdas = []
 
+        jornadas_completas = 0
+        solo_entrada = 0
         presentes = 0
         ausentes = 0
 
@@ -1072,12 +1080,14 @@ def reporte_mensual_curso(request):
                 if asistencia.hora_salida:
 
                     estado = "COMPLETO"
+                    texto = "C"
+                    jornadas_completas += 1
 
                 else:
 
                     estado = "PRESENTE"
-
-                texto = "P"
+                    texto = "E"
+                    solo_entrada += 1
 
             # AUSENTE
 
@@ -1119,6 +1129,8 @@ def reporte_mensual_curso(request):
                 "numero": numero,
                 "alumno": alumno,
                 "celdas": celdas,
+                "jornadas_completas": jornadas_completas,
+                "solo_entrada": solo_entrada,
                 "presentes": presentes,
                 "ausentes": ausentes,
                 "porcentaje": porcentaje,
@@ -1315,10 +1327,10 @@ def exportar_reporte_mensual_excel(request):
 
     ws.sheet_properties.pageSetUpPr.fitToPage = True
 
-    ws.page_margins.left = 0.25
-    ws.page_margins.right = 0.25
-    ws.page_margins.top = 0.25
-    ws.page_margins.bottom = 0.25
+    ws.page_margins.left = 0.15
+    ws.page_margins.right = 0.15
+    ws.page_margins.top = 0.20
+    ws.page_margins.bottom = 0.20
 
     # ========================================================
     # ESTILOS
@@ -1513,7 +1525,7 @@ def exportar_reporte_mensual_excel(request):
 
         celda.font = Font(
             bold=True,
-            size=8
+            size=6.5
         )
 
         celda.fill = relleno_encabezado
@@ -1523,7 +1535,8 @@ def exportar_reporte_mensual_excel(request):
         celda.alignment = Alignment(
             horizontal="center",
             vertical="center",
-            wrap_text=True
+            wrap_text=True,
+            shrink_to_fit=True
         )
 
     # ========================================================
@@ -1651,29 +1664,42 @@ def exportar_reporte_mensual_excel(request):
 
             celda.border = borde
 
-            celda.font = Font(
-                size=7
-            )
-
-            celda.alignment = Alignment(
-                horizontal=(
-                    "left"
-                    if c == 3
-                    else "center"
-                ),
-                vertical="center"
-            )
+            if c == 3:
+                # Nombre completo: mantenerlo en una sola línea y
+                # reducir automáticamente la fuente solo si hace falta.
+                celda.font = Font(size=7)
+                celda.alignment = Alignment(
+                    horizontal="left",
+                    vertical="center",
+                    wrap_text=False,
+                    shrink_to_fit=True
+                )
+            else:
+                celda.font = Font(size=6.5)
+                celda.alignment = Alignment(
+                    horizontal="center",
+                    vertical="center",
+                    wrap_text=False,
+                    shrink_to_fit=True
+                )
 
         fila_excel += 1
 
     # ========================================================
-    # TAMAÑO COLUMNAS
+    # TAMAÑO COLUMNAS - AJUSTADO PARA OFICIO HORIZONTAL
+    # Prioridad: ALUMNO amplio; C.I., días y totales compactos.
     # ========================================================
 
-    ws.column_dimensions["A"].width = 4
-    ws.column_dimensions["B"].width = 10
-    ws.column_dimensions["C"].width = 32
+    # N°
+    ws.column_dimensions["A"].width = 2.5
 
+    # C.I.
+    ws.column_dimensions["B"].width = 7.0
+
+    # ALUMNO: espacio principal para apellido y nombre completos
+    ws.column_dimensions["C"].width = 55
+
+    # DÍAS: solo contienen P / A / -
     for numero_columna in range(
         4,
         4 + len(dias)
@@ -1685,8 +1711,9 @@ def exportar_reporte_mensual_excel(request):
 
         ws.column_dimensions[
             letra
-        ].width = 3.5
+        ].width = 2.15
 
+    # P / A / %
     for numero_columna in range(
         columna_presentes,
         columna_porcentaje + 1
@@ -1698,7 +1725,7 @@ def exportar_reporte_mensual_excel(request):
 
         ws.column_dimensions[
             letra
-        ].width = 6
+        ].width = 3.6
 
     # ========================================================
     # ALTURAS
@@ -1707,7 +1734,10 @@ def exportar_reporte_mensual_excel(request):
     ws.row_dimensions[1].height = 20
     ws.row_dimensions[2].height = 18
     ws.row_dimensions[3].height = 22
-    ws.row_dimensions[7].height = 25
+    ws.row_dimensions[7].height = 22
+
+    for fila in range(8, fila_excel):
+        ws.row_dimensions[fila].height = 14
 
     # ========================================================
     # CONGELAR
@@ -1763,427 +1793,188 @@ def exportar_reporte_mensual_excel(request):
 
     return response
 
-    hoy = timezone.localdate()
-
-    # --------------------------------------------------------
-    # OBTENER PARÁMETROS
-    # --------------------------------------------------------
-
-    curso = request.GET.get(
-        "curso",
-        ""
-    ).strip()
-
-    try:
-        mes = int(
-            request.GET.get(
-                "mes",
-                hoy.month
-            )
-        )
-    except (TypeError, ValueError):
-        mes = hoy.month
-
-    try:
-        anio = int(
-            request.GET.get(
-                "anio",
-                hoy.year
-            )
-        )
-    except (TypeError, ValueError):
-        anio = hoy.year
-
-
-    # Validar mes
-
-    if mes < 1 or mes > 12:
-        mes = hoy.month
-
-
-    # --------------------------------------------------------
-    # CURSOS DISPONIBLES
-    # --------------------------------------------------------
-
-    cursos = list(
-        Alumno.objects
-        .filter(
-            activo=True
-        )
-        .exclude(
-            curso=""
-        )
-        .values_list(
-            "curso",
-            flat=True
-        )
-        .distinct()
-        .order_by(
-            "curso"
-        )
-    )
-
-
-    # Si no se seleccionó curso, tomar el primero
-
-    if not curso and cursos:
-        curso = cursos[0]
-
-
-    # --------------------------------------------------------
-    # ALUMNOS DEL CURSO
-    # --------------------------------------------------------
-
-    alumnos = (
-        Alumno.objects
-        .filter(
-            activo=True,
-            curso=curso
-        )
-        .order_by(
-            "apellidos",
-            "nombres"
-        )
-    )
-
-
-    # --------------------------------------------------------
-    # NOMBRE DEL MES
-    # --------------------------------------------------------
-
-    nombres_meses = {
-        1: "ENERO",
-        2: "FEBRERO",
-        3: "MARZO",
-        4: "ABRIL",
-        5: "MAYO",
-        6: "JUNIO",
-        7: "JULIO",
-        8: "AGOSTO",
-        9: "SEPTIEMBRE",
-        10: "OCTUBRE",
-        11: "NOVIEMBRE",
-        12: "DICIEMBRE",
-    }
-
-    nombre_mes = nombres_meses[mes]
-
-
-    meses = [
-        (1, "Enero"),
-        (2, "Febrero"),
-        (3, "Marzo"),
-        (4, "Abril"),
-        (5, "Mayo"),
-        (6, "Junio"),
-        (7, "Julio"),
-        (8, "Agosto"),
-        (9, "Septiembre"),
-        (10, "Octubre"),
-        (11, "Noviembre"),
-        (12, "Diciembre"),
-    ]
-
-
-    # --------------------------------------------------------
-    # DÍAS HÁBILES DEL MES
-    # Lunes a viernes
-    # --------------------------------------------------------
-
-    ultimo_dia = calendar.monthrange(
-        anio,
-        mes
-    )[1]
-
-
-    dias = []
-
-
-    nombres_dias = {
-        0: "L",
-        1: "M",
-        2: "X",
-        3: "J",
-        4: "V",
-    }
-
-
-    for numero_dia in range(
-        1,
-        ultimo_dia + 1
-    ):
-
-        fecha = datetime(
-            anio,
-            mes,
-            numero_dia
-        ).date()
-
-
-        # 0 = lunes
-        # 4 = viernes
-        # 5 = sábado
-        # 6 = domingo
-
-        if fecha.weekday() <= 4:
-
-            dias.append(
-                {
-                    "fecha": fecha,
-                    "numero": numero_dia,
-                    "dia_semana": nombres_dias[
-                        fecha.weekday()
-                    ],
-                }
-            )
-
-
-    # --------------------------------------------------------
-    # ASISTENCIAS DEL MES
-    # --------------------------------------------------------
-
-    asistencias = (
-        Asistencia.objects
-        .filter(
-            alumno__in=alumnos,
-            fecha__year=anio,
-            fecha__month=mes
-        )
-        .select_related(
-            "alumno"
-        )
-    )
-
-
-    mapa_asistencias = {}
-
-
-    for asistencia in asistencias:
-
-        clave = (
-            asistencia.alumno_id,
-            asistencia.fecha
-        )
-
-        mapa_asistencias[clave] = asistencia
-
-
-    # --------------------------------------------------------
-    # CONSTRUIR FILAS
-    # --------------------------------------------------------
-
-    filas = []
-
-
-    for numero, alumno in enumerate(
-        alumnos,
-        start=1
-    ):
-
-        celdas = []
-
-        presentes = 0
-        ausentes = 0
-        completos = 0
-
-
-        for dia in dias:
-
-            fecha = dia["fecha"]
-
-            asistencia = mapa_asistencias.get(
-                (
-                    alumno.id,
-                    fecha
-                )
-            )
-
-
-            # ------------------------------------------------
-            # FECHA FUTURA
-            # ------------------------------------------------
-
-            if fecha > hoy:
-
-                estado = "PENDIENTE"
-
-                texto = "-"
-
-
-            # ------------------------------------------------
-            # PRESENTE
-            # ------------------------------------------------
-
-            elif (
-                asistencia
-                and asistencia.hora_entrada
-            ):
-
-                presentes += 1
-
-                if asistencia.hora_salida:
-
-                    completos += 1
-
-                    estado = "COMPLETO"
-
-                    texto = "P"
-
-                else:
-
-                    estado = "PRESENTE"
-
-                    texto = "P"
-
-
-            # ------------------------------------------------
-            # AUSENTE
-            # ------------------------------------------------
-
-            else:
-
-                estado = "AUSENTE"
-
-                texto = "A"
-
-                ausentes += 1
-
-
-            celdas.append(
-                {
-                    "fecha": fecha,
-                    "estado": estado,
-                    "texto": texto,
-                    "asistencia": asistencia,
-                }
-            )
-
-
-        # ----------------------------------------------------
-        # PORCENTAJE
-        # ----------------------------------------------------
-
-        dias_computados = (
-            presentes
-            + ausentes
-        )
-
-
-        if dias_computados > 0:
-
-            porcentaje = round(
-                presentes
-                * 100
-                / dias_computados,
-                1
-            )
-
-        else:
-
-            porcentaje = 0
-
-
-        filas.append(
-            {
-                "numero": numero,
-                "alumno": alumno,
-                "celdas": celdas,
-                "presentes": presentes,
-                "ausentes": ausentes,
-                "completos": completos,
-                "porcentaje": porcentaje,
-            }
-        )
-
-
-    # --------------------------------------------------------
-    # CONTEXTO
-    # --------------------------------------------------------
-
-    contexto = {
-
-        "curso": curso,
-
-        "cursos": cursos,
-
-        "mes": mes,
-
-        "meses": meses,
-
-        "anio": anio,
-
-        "nombre_mes": nombre_mes,
-
-        "dias": dias,
-
-        "filas": filas,
-
-        "total_alumnos": alumnos.count(),
-
-    }
-
-
-    return render(
-        request,
-        "asistencia/reporte_mensual_curso.html",
-        contexto
-    )
-
-    return render(
-        request,
-        "asistencia/reporte_mensual_curso.html",
-        {
-            "alumnos": (
-                Alumno.objects
-                .filter(
-                    activo=True
-                )
-                .order_by(
-                    "apellidos",
-                    "nombres"
-                )
-            )
-        }
-    )
-
-
 # ============================================================
-# REPORTE INDIVIDUAL
+# REPORTE INDIVIDUAL POR ALUMNO
 # ============================================================
 
 def reporte_individual(request):
 
+    hoy = timezone.localdate()
+
     alumnos = (
         Alumno.objects
-        .filter(
-            activo=True
-        )
+        .filter(activo=True)
         .order_by(
             "apellidos",
             "nombres"
         )
     )
 
+    alumno_id = request.GET.get(
+        "alumno",
+        ""
+    ).strip()
+
+    fecha_desde_texto = request.GET.get(
+        "fecha_desde",
+        ""
+    ).strip()
+
+    fecha_hasta_texto = request.GET.get(
+        "fecha_hasta",
+        ""
+    ).strip()
+
+    fecha_desde = hoy.replace(day=1)
+    fecha_hasta = hoy
+
+    if fecha_desde_texto:
+        try:
+            fecha_desde = datetime.strptime(
+                fecha_desde_texto,
+                "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            pass
+
+    if fecha_hasta_texto:
+        try:
+            fecha_hasta = datetime.strptime(
+                fecha_hasta_texto,
+                "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            pass
+
+    if fecha_desde > fecha_hasta:
+        fecha_desde, fecha_hasta = (
+            fecha_hasta,
+            fecha_desde
+        )
+
+    alumno_seleccionado = None
+    filas = []
+    presentes = 0
+    ausentes = 0
+    completos = 0
+    en_colegio = 0
+
+    if alumno_id:
+        try:
+            alumno_seleccionado = (
+                Alumno.objects
+                .filter(
+                    id=int(alumno_id),
+                    activo=True
+                )
+                .first()
+            )
+        except (TypeError, ValueError):
+            alumno_seleccionado = None
+
+    if alumno_seleccionado:
+        asistencias = (
+            Asistencia.objects
+            .filter(
+                alumno=alumno_seleccionado,
+                fecha__range=(
+                    fecha_desde,
+                    fecha_hasta
+                )
+            )
+            .order_by("fecha")
+        )
+
+        mapa_asistencias = {
+            asistencia.fecha: asistencia
+            for asistencia in asistencias
+        }
+
+        fecha_actual = fecha_desde
+
+        nombres_dias = {
+            0: "Lunes",
+            1: "Martes",
+            2: "Miércoles",
+            3: "Jueves",
+            4: "Viernes",
+        }
+
+        while fecha_actual <= fecha_hasta:
+            if fecha_actual.weekday() <= 4:
+                asistencia = mapa_asistencias.get(fecha_actual)
+
+                if fecha_actual > hoy:
+                    estado = "PENDIENTE"
+                elif asistencia and asistencia.hora_entrada:
+                    presentes += 1
+                    if asistencia.hora_salida:
+                        estado = "JORNADA COMPLETA"
+                        completos += 1
+                    else:
+                        estado = "EN EL COLEGIO"
+                        en_colegio += 1
+                else:
+                    estado = "AUSENTE"
+                    ausentes += 1
+
+                filas.append(
+                    {
+                        "fecha": fecha_actual,
+                        "dia": nombres_dias[fecha_actual.weekday()],
+                        "asistencia": asistencia,
+                        "estado": estado,
+                    }
+                )
+
+            fecha_actual += timedelta(days=1)
+
+    dias_computados = presentes + ausentes
+
+    if dias_computados:
+        porcentaje = round(
+            presentes * 100 / dias_computados,
+            1
+        )
+    else:
+        porcentaje = 0
+
+    contexto = {
+        "alumnos": alumnos,
+        "alumno_seleccionado": alumno_seleccionado,
+        "alumno_id": alumno_id,
+        "fecha_desde": fecha_desde.strftime("%Y-%m-%d"),
+        "fecha_hasta": fecha_hasta.strftime("%Y-%m-%d"),
+        "filas": filas,
+        "dias_computados": dias_computados,
+        "presentes": presentes,
+        "ausentes": ausentes,
+        "completos": completos,
+        "en_colegio": en_colegio,
+        "porcentaje": porcentaje,
+    }
+
     return render(
         request,
         "asistencia/reporte_individual.html",
-        {
-            "alumnos": alumnos
-        }
+        contexto
     )
 
 
 # ============================================================
-# EXPORTAR EXCEL
-#
-# Se deja temporalmente disponible para que Django
-# encuentre la función. Luego adaptaremos el Excel definitivo.
+# EXPORTAR REPORTE MENSUAL A PDF
 # ============================================================
 
-def exportar_reporte_mensual_excel(request):
+def exportar_reporte_mensual_pdf(request):
+    """Exporta la planilla mensual adaptada al sistema de entrada/salida.
+
+    C = Jornada completa (entrada + salida)
+    E = Solo entrada
+    A = Ausente
+    - = Fecha futura / pendiente
+    """
 
     hoy = timezone.localdate()
-
     curso = request.GET.get("curso", "").strip()
 
     try:
@@ -2199,644 +1990,268 @@ def exportar_reporte_mensual_excel(request):
     if mes < 1 or mes > 12:
         mes = hoy.month
 
-
-    # ==========================================================
-    # ALUMNOS
-    # ==========================================================
-
-    alumnos = (
+    cursos = list(
         Alumno.objects
-        .filter(
-            activo=True,
-            curso=curso
-        )
-        .order_by(
-            "apellidos",
-            "nombres"
-        )
+        .filter(activo=True)
+        .exclude(curso="")
+        .values_list("curso", flat=True)
+        .distinct()
+        .order_by("curso")
     )
 
+    if not curso and cursos:
+        curso = cursos[0]
 
-    # ==========================================================
-    # NOMBRE DEL MES
-    # ==========================================================
+    alumnos = list(
+        Alumno.objects
+        .filter(activo=True, curso=curso)
+        .order_by("apellidos", "nombres")
+    )
 
     nombres_meses = {
-        1: "ENERO",
-        2: "FEBRERO",
-        3: "MARZO",
-        4: "ABRIL",
-        5: "MAYO",
-        6: "JUNIO",
-        7: "JULIO",
-        8: "AGOSTO",
-        9: "SEPTIEMBRE",
-        10: "OCTUBRE",
-        11: "NOVIEMBRE",
-        12: "DICIEMBRE",
+        1: "ENERO", 2: "FEBRERO", 3: "MARZO", 4: "ABRIL",
+        5: "MAYO", 6: "JUNIO", 7: "JULIO", 8: "AGOSTO",
+        9: "SEPTIEMBRE", 10: "OCTUBRE", 11: "NOVIEMBRE", 12: "DICIEMBRE",
     }
-
     nombre_mes = nombres_meses[mes]
 
-
-    # ==========================================================
-    # DÍAS HÁBILES
-    # ==========================================================
-
-    ultimo_dia = calendar.monthrange(
-        anio,
-        mes
-    )[1]
-
+    # Solo días hábiles de lunes a viernes.
+    ultimo_dia = calendar.monthrange(anio, mes)[1]
+    nombres_dias = {0: "L", 1: "M", 2: "X", 3: "J", 4: "V"}
     dias = []
 
-    nombres_dias = {
-        0: "L",
-        1: "M",
-        2: "X",
-        3: "J",
-        4: "V",
-    }
-
     for numero_dia in range(1, ultimo_dia + 1):
-
-        fecha = datetime(
-            anio,
-            mes,
-            numero_dia
-        ).date()
-
+        fecha = datetime(anio, mes, numero_dia).date()
         if fecha.weekday() <= 4:
-
             dias.append({
                 "fecha": fecha,
                 "numero": numero_dia,
-                "dia_semana": nombres_dias[
-                    fecha.weekday()
-                ],
+                "dia_semana": nombres_dias[fecha.weekday()],
             })
-
-
-    # ==========================================================
-    # ASISTENCIAS
-    # ==========================================================
 
     asistencias = (
         Asistencia.objects
         .filter(
             alumno__in=alumnos,
             fecha__year=anio,
-            fecha__month=mes
+            fecha__month=mes,
         )
         .select_related("alumno")
     )
 
-    mapa_asistencias = {}
+    mapa_asistencias = {
+        (a.alumno_id, a.fecha): a
+        for a in asistencias
+    }
 
-    for asistencia in asistencias:
+    buffer = BytesIO()
+    pagina_oficio_horizontal = (13 * inch, 8.5 * inch)
 
-        mapa_asistencias[
-            (
-                asistencia.alumno_id,
-                asistencia.fecha
-            )
-        ] = asistencia
-
-
-    # ==========================================================
-    # CREAR EXCEL
-    # ==========================================================
-
-    wb = Workbook()
-
-    ws = wb.active
-
-    ws.title = "Asistencia mensual"
-
-
-    # ==========================================================
-    # CONFIGURACIÓN DE IMPRESIÓN
-    # OFICIO HORIZONTAL
-    # ==========================================================
-
-    ws.page_setup.orientation = "landscape"
-
-    ws.page_setup.paperSize = ws.PAPERSIZE_FOLIO
-
-    ws.page_setup.fitToWidth = 1
-
-    ws.page_setup.fitToHeight = 1
-
-    ws.sheet_properties.pageSetUpPr.fitToPage = True
-
-    ws.page_margins.left = 0.25
-    ws.page_margins.right = 0.25
-    ws.page_margins.top = 0.25
-    ws.page_margins.bottom = 0.25
-    ws.page_margins.header = 0.1
-    ws.page_margins.footer = 0.1
-
-
-    # ==========================================================
-    # ESTILOS
-    # ==========================================================
-
-    borde_fino = Side(
-        style="thin",
-        color="000000"
+    documento = SimpleDocTemplate(
+        buffer,
+        pagesize=pagina_oficio_horizontal,
+        rightMargin=9,
+        leftMargin=9,
+        topMargin=7,
+        bottomMargin=7,
+        title="Planilla mensual de entrada y salida",
+        author="Sistema de Asistencia",
     )
 
-    borde = Border(
-        left=borde_fino,
-        right=borde_fino,
-        top=borde_fino,
-        bottom=borde_fino
+    elementos = []
+
+    estilo_colegio = ParagraphStyle(
+        "ColegioPDF", fontName="Helvetica-Bold", fontSize=8.5,
+        leading=9.2, alignment=TA_CENTER, spaceAfter=0, spaceBefore=0,
+    )
+    estilo_subtitulo = ParagraphStyle(
+        "SubtituloPDF", fontName="Helvetica", fontSize=7.2,
+        leading=8, alignment=TA_CENTER, spaceAfter=0, spaceBefore=0,
+    )
+    estilo_titulo = ParagraphStyle(
+        "TituloPDF", fontName="Helvetica-Bold", fontSize=10,
+        leading=10.5, alignment=TA_CENTER, spaceAfter=0, spaceBefore=0,
+    )
+    estilo_nombre = ParagraphStyle(
+        "NombreAlumnoPDF", fontName="Helvetica-Bold", fontSize=7.0,
+        leading=7.3, alignment=0, spaceAfter=0, spaceBefore=0,
+    )
+    estilo_dato = ParagraphStyle(
+        "DatoPDF", fontName="Helvetica", fontSize=7.2, leading=7.8,
+    )
+    estilo_leyenda = ParagraphStyle(
+        "LeyendaPDF", fontName="Helvetica", fontSize=6.8,
+        leading=7.4, alignment=TA_CENTER,
     )
 
+    ruta_logo = finders.find("asistencia/img/logo_colegio.png")
+    if ruta_logo:
+        logo = Image(ruta_logo, width=32, height=32)
+        logo.hAlign = "CENTER"
+        elementos.append(logo)
 
-    encabezado_fill = PatternFill(
-        "solid",
-        fgColor="D9EAF7"
+    elementos.append(Paragraph("COLEGIO NACIONAL", estilo_colegio))
+    elementos.append(Paragraph("GRAL. JOSÉ ELIZARDO AQUINO - LUQUE", estilo_subtitulo))
+    elementos.append(Paragraph("PLANILLA MENSUAL DE ENTRADA Y SALIDA", estilo_titulo))
+    elementos.append(Spacer(1, 3))
+
+    tabla_datos = Table(
+        [[
+            Paragraph(f"<b>CURSO:</b> {curso}", estilo_dato),
+            Paragraph(f"<b>MES:</b> {nombre_mes}", estilo_dato),
+            Paragraph(f"<b>AÑO:</b> {anio}", estilo_dato),
+            Paragraph(f"<b>TOTAL ALUMNOS:</b> {len(alumnos)}", estilo_dato),
+        ]],
+        colWidths=[125, 125, 100, 160],
+        hAlign="LEFT",
     )
+    tabla_datos.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+        ("TOPPADDING", (0, 0), (-1, -1), 1),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
+    ]))
+    elementos.append(tabla_datos)
+    elementos.append(Spacer(1, 2))
 
-
-    presente_fill = PatternFill(
-        "solid",
-        fgColor="D1E7DD"
-    )
-
-
-    ausente_fill = PatternFill(
-        "solid",
-        fgColor="F8D7DA"
-    )
-
-
-    pendiente_fill = PatternFill(
-        "solid",
-        fgColor="FFF3CD"
-    )
-
-
-    # ==========================================================
-    # TÍTULO
-    # ==========================================================
-
-    total_columnas = (
-        3
-        + len(dias)
-        + 3
-    )
-
-    ultima_columna = get_column_letter(
-        total_columnas
-    )
-
-
-    ws.merge_cells(
-        f"A1:{ultima_columna}1"
-    )
-
-    ws["A1"] = "COLEGIO NACIONAL"
-
-    ws["A1"].font = Font(
-        bold=True,
-        size=14
-    )
-
-    ws["A1"].alignment = Alignment(
-        horizontal="center"
-    )
-
-
-    ws.merge_cells(
-        f"A2:{ultima_columna}2"
-    )
-
-    ws["A2"] = (
-        "GRAL. JOSÉ ELIZARDO AQUINO - LUQUE"
-    )
-
-    ws["A2"].font = Font(
-        bold=True,
-        size=12
-    )
-
-    ws["A2"].alignment = Alignment(
-        horizontal="center"
-    )
-
-
-    ws.merge_cells(
-        f"A3:{ultima_columna}3"
-    )
-
-    ws["A3"] = (
-        "PLANILLA MENSUAL DE ASISTENCIA"
-    )
-
-    ws["A3"].font = Font(
-        bold=True,
-        size=14
-    )
-
-    ws["A3"].alignment = Alignment(
-        horizontal="center"
-    )
-
-
-    # ==========================================================
-    # DATOS
-    # ==========================================================
-
-    ws["A5"] = "CURSO:"
-    ws["B5"] = curso
-
-    ws["D5"] = "MES:"
-    ws["E5"] = nombre_mes
-
-    ws["G5"] = "AÑO:"
-    ws["H5"] = anio
-
-
-    ws["A5"].font = Font(bold=True)
-    ws["D5"].font = Font(bold=True)
-    ws["G5"].font = Font(bold=True)
-
-
-    # ==========================================================
-    # ENCABEZADOS TABLA
-    # ==========================================================
-
-    fila_encabezado = 7
-
-
-    ws.cell(
-        row=fila_encabezado,
-        column=1,
-        value="N°"
-    )
-
-    ws.cell(
-        row=fila_encabezado,
-        column=2,
-        value="C.I."
-    )
-
-    ws.cell(
-        row=fila_encabezado,
-        column=3,
-        value="ALUMNO"
-    )
-
-
-    columna = 4
-
-
+    encabezado = ["N°", "C.I.", "ALUMNO"]
     for dia in dias:
+        encabezado.append(f"{dia['numero']}\n{dia['dia_semana']}")
+    encabezado.extend(["JC", "SE", "A", "%"])
 
-        celda = ws.cell(
-            row=fila_encabezado,
-            column=columna
-        )
+    datos_tabla = [encabezado]
 
-        celda.value = (
-            f"{dia['numero']}\n"
-            f"{dia['dia_semana']}"
-        )
-
-        columna += 1
-
-
-    ws.cell(
-        row=fila_encabezado,
-        column=columna,
-        value="P"
-    )
-
-    ws.cell(
-        row=fila_encabezado,
-        column=columna + 1,
-        value="A"
-    )
-
-    ws.cell(
-        row=fila_encabezado,
-        column=columna + 2,
-        value="%"
-    )
-
-
-    # Estilo encabezados
-
-    for c in range(
-        1,
-        total_columnas + 1
-    ):
-
-        celda = ws.cell(
-            row=fila_encabezado,
-            column=c
-        )
-
-        celda.font = Font(
-            bold=True,
-            size=8
-        )
-
-        celda.fill = encabezado_fill
-
-        celda.border = borde
-
-        celda.alignment = Alignment(
-            horizontal="center",
-            vertical="center",
-            wrap_text=True
-        )
-
-
-    # ==========================================================
-    # FILAS DE ALUMNOS
-    # ==========================================================
-
-    fila_excel = 8
-
-
-    for numero, alumno in enumerate(
-        alumnos,
-        start=1
-    ):
-
+    for numero, alumno in enumerate(alumnos, start=1):
+        jornadas_completas = 0
+        solo_entrada = 0
+        ausentes = 0
         presentes = 0
 
-        ausentes = 0
-
-
-        # Número
-
-        ws.cell(
-            row=fila_excel,
-            column=1,
-            value=numero
-        )
-
-
-        # Cédula
-
-        ws.cell(
-            row=fila_excel,
-            column=2,
-            value=alumno.cedula
-        )
-
-
-        # Alumno
-
-        nombre_completo = (
-            f"{alumno.apellidos}, "
-            f"{alumno.nombres}"
-        )
-
-        ws.cell(
-            row=fila_excel,
-            column=3,
-            value=nombre_completo
-        )
-
-
-        columna_dia = 4
-
+        nombre_completo = f"{alumno.apellidos}, {alumno.nombres}"
+        fila = [
+            str(numero),
+            str(alumno.cedula),
+            Paragraph(nombre_completo, estilo_nombre),
+        ]
 
         for dia in dias:
-
             fecha = dia["fecha"]
-
-            asistencia = mapa_asistencias.get(
-                (
-                    alumno.id,
-                    fecha
-                )
-            )
-
-
-            celda = ws.cell(
-                row=fila_excel,
-                column=columna_dia
-            )
-
-
-            # Fecha futura
+            asistencia = mapa_asistencias.get((alumno.id, fecha))
 
             if fecha > hoy:
-
-                celda.value = "-"
-
-                celda.fill = pendiente_fill
-
-
-            # Presente
-
-            elif (
-                asistencia
-                and asistencia.hora_entrada
-            ):
-
-                celda.value = "P"
-
-                celda.fill = presente_fill
-
+                fila.append("-")
+            elif asistencia and asistencia.hora_entrada:
                 presentes += 1
-
-
-            # Ausente
-
+                if asistencia.hora_salida:
+                    fila.append("C")
+                    jornadas_completas += 1
+                else:
+                    fila.append("E")
+                    solo_entrada += 1
             else:
-
-                celda.value = "A"
-
-                celda.fill = ausente_fill
-
+                fila.append("A")
                 ausentes += 1
 
-
-            columna_dia += 1
-
-
-        # ======================================================
-        # TOTALES
-        # ======================================================
-
         dias_computados = presentes + ausentes
+        porcentaje = round(presentes * 100 / dias_computados, 1) if dias_computados else 0
 
+        fila.extend([
+            str(jornadas_completas),
+            str(solo_entrada),
+            str(ausentes),
+            f"{porcentaje}%",
+        ])
+        datos_tabla.append(fila)
 
-        if dias_computados:
+    # Anchos optimizados para Oficio horizontal.
+    ancho_numero = 16
+    ancho_cedula = 41
+    ancho_alumno = 218
+    ancho_jc = 22
+    ancho_se = 22
+    ancho_a = 20
+    ancho_porcentaje = 32
 
-            porcentaje = round(
-                presentes
-                * 100
-                / dias_computados,
-                1
-            )
+    cantidad_dias = len(dias)
+    ancho_pagina_util = (
+        pagina_oficio_horizontal[0]
+        - documento.leftMargin
+        - documento.rightMargin
+    )
+    ancho_fijo = (
+        ancho_numero + ancho_cedula + ancho_alumno
+        + ancho_jc + ancho_se + ancho_a + ancho_porcentaje
+    )
+    ancho_dia = ((ancho_pagina_util - ancho_fijo) / cantidad_dias) if cantidad_dias else 20
+    ancho_dia = max(12.5, min(ancho_dia, 23))
 
-        else:
+    anchos_columnas = [ancho_numero, ancho_cedula, ancho_alumno]
+    anchos_columnas.extend([ancho_dia for _ in dias])
+    anchos_columnas.extend([ancho_jc, ancho_se, ancho_a, ancho_porcentaje])
 
-            porcentaje = 0
-
-
-        ws.cell(
-            row=fila_excel,
-            column=columna_dia,
-            value=presentes
-        )
-
-        ws.cell(
-            row=fila_excel,
-            column=columna_dia + 1,
-            value=ausentes
-        )
-
-        ws.cell(
-            row=fila_excel,
-            column=columna_dia + 2,
-            value=f"{porcentaje}%"
-        )
-
-
-        # ======================================================
-        # ESTILO DE FILA
-        # ======================================================
-
-        for c in range(
-            1,
-            total_columnas + 1
-        ):
-
-            celda = ws.cell(
-                row=fila_excel,
-                column=c
-            )
-
-            celda.border = borde
-
-            celda.font = Font(
-                size=7
-            )
-
-            celda.alignment = Alignment(
-                horizontal=(
-                    "left"
-                    if c == 3
-                    else "center"
-                ),
-                vertical="center"
-            )
-
-
-        fila_excel += 1
-
-
-    # ==========================================================
-    # ANCHO DE COLUMNAS
-    # ==========================================================
-
-    ws.column_dimensions["A"].width = 4
-
-    ws.column_dimensions["B"].width = 10
-
-    ws.column_dimensions["C"].width = 32
-
-
-    for columna_dia in range(
-        4,
-        4 + len(dias)
-    ):
-
-        letra = get_column_letter(
-            columna_dia
-        )
-
-        ws.column_dimensions[
-            letra
-        ].width = 4
-
-
-    for c in range(
-        4 + len(dias),
-        total_columnas + 1
-    ):
-
-        letra = get_column_letter(c)
-
-        ws.column_dimensions[
-            letra
-        ].width = 6
-
-
-    # ==========================================================
-    # ALTURAS
-    # ==========================================================
-
-    ws.row_dimensions[1].height = 20
-    ws.row_dimensions[2].height = 18
-    ws.row_dimensions[3].height = 22
-    ws.row_dimensions[7].height = 25
-
-
-    # ==========================================================
-    # CONGELAR ENCABEZADO
-    # ==========================================================
-
-    ws.freeze_panes = "D8"
-
-
-    # ==========================================================
-    # RESPUESTA HTTP
-    # ==========================================================
-
-    response = HttpResponse(
-        content_type=(
-            "application/"
-            "vnd.openxmlformats-officedocument."
-            "spreadsheetml.sheet"
-        )
+    tabla = Table(
+        datos_tabla,
+        colWidths=anchos_columnas,
+        repeatRows=1,
+        hAlign="CENTER",
     )
 
-    nombre_archivo = (
-        f"asistencia_"
-        f"{curso.replace(' ', '_')}_"
-        f"{mes:02d}_"
-        f"{anio}.xlsx"
-    )
+    estilo_tabla = [
+        ("GRID", (0, 0), (-1, -1), 0.45, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E9ECEF")),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 6.5),
+        ("FONTSIZE", (0, 1), (-1, -1), 6.8),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("ALIGN", (2, 1), (2, -1), "LEFT"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 1.1),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 1.1),
+        ("TOPPADDING", (0, 0), (-1, -1), 1.4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 1.4),
+    ]
 
+    columna_inicio_dias = 3
+    for fila_indice, alumno in enumerate(alumnos, start=1):
+        for indice_dia, dia in enumerate(dias):
+            fecha = dia["fecha"]
+            asistencia = mapa_asistencias.get((alumno.id, fecha))
+            columna = columna_inicio_dias + indice_dia
 
-    response[
-        "Content-Disposition"
-    ] = (
-        f'attachment; '
-        f'filename="{nombre_archivo}"'
-    )
+            if fecha > hoy:
+                color_fondo = colors.HexColor("#FFF3CD")       # pendiente
+            elif asistencia and asistencia.hora_entrada and asistencia.hora_salida:
+                color_fondo = colors.HexColor("#D1E7DD")       # completa
+            elif asistencia and asistencia.hora_entrada:
+                color_fondo = colors.HexColor("#DDEBFF")       # solo entrada
+            else:
+                color_fondo = colors.HexColor("#F8D7DA")       # ausente
 
+            estilo_tabla.append((
+                "BACKGROUND",
+                (columna, fila_indice),
+                (columna, fila_indice),
+                color_fondo,
+            ))
 
-    wb.save(response)
+    tabla.setStyle(TableStyle(estilo_tabla))
+    elementos.append(tabla)
+    elementos.append(Spacer(1, 3))
+    elementos.append(Paragraph(
+        "<b>Leyenda:</b> C = Jornada completa (entrada y salida) &nbsp;&nbsp; "
+        "E = Solo entrada &nbsp;&nbsp; A = Ausente &nbsp;&nbsp; - = Fecha pendiente &nbsp;&nbsp; "
+        "JC = Jornadas completas &nbsp;&nbsp; SE = Solo entrada",
+        estilo_leyenda,
+    ))
 
+    documento.build(elementos)
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    curso_archivo = curso.replace(" ", "_").replace("°", "")
+    nombre_archivo = f"entrada_salida_{curso_archivo}_{mes:02d}_{anio}.pdf"
+    response["Content-Disposition"] = f'attachment; filename="{nombre_archivo}"'
     return response
 
-    return HttpResponse(
-        "La exportación Excel será adaptada "
-        "al nuevo sistema de entrada y salida."
-    )
-
-
-# ============================================================
-# EXPORTAR PDF
-#
-# Se deja temporalmente disponible para que Django
-# encuentre la función. Luego adaptaremos el PDF definitivo.
-# ============================================================
-
-def exportar_reporte_mensual_pdf(request):
-
-    return HttpResponse(
-        "La exportación PDF será adaptada "
-        "al nuevo sistema de entrada y salida."
-    )

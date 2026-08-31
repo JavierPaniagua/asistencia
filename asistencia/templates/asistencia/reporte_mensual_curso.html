@@ -26,16 +26,16 @@
 
     <style>
 
+        /* ====================================================
+           PANTALLA
+           ==================================================== */
+
         body {
 
             background: #f4f6f9;
 
         }
 
-
-        /* ====================================================
-           ENCABEZADO
-           ==================================================== */
 
         .encabezado {
 
@@ -53,6 +53,10 @@
 
         }
 
+
+        /* ====================================================
+           LOGO
+           ==================================================== */
 
         .logo {
 
@@ -129,7 +133,19 @@
            ESTADOS
            ==================================================== */
 
-        .presente,
+        .presente {
+
+            background-color: #d1e7dd !important;
+
+            color: #146c43;
+
+            text-align: center;
+
+            font-weight: bold;
+
+        }
+
+
         .completo {
 
             background-color: #d1e7dd !important;
@@ -164,274 +180,236 @@
 
             text-align: center;
 
-            font-weight: bold;
-
         }
 
 
         /* ====================================================
            IMPRESIÓN
            HOJA OFICIO HORIZONTAL
-           13 X 8.5 PULGADAS
+           13 x 8.5 pulgadas
            ==================================================== */
 
         @media print {
 
-
             @page {
-
                 size: 13in 8.5in;
-
-                margin: 5mm;
-
+                margin: 4mm;
             }
-
 
             html,
             body {
-
                 width: 100%;
-
                 margin: 0 !important;
-
                 padding: 0 !important;
-
                 background: white !important;
-
-                font-size: 8px;
-
+                font-family: Arial, Helvetica, sans-serif !important;
+                font-size: 9px !important;
             }
-
 
             .no-imprimir {
-
                 display: none !important;
-
             }
-
 
             .container-fluid {
-
                 width: 100% !important;
-
                 max-width: none !important;
-
                 margin: 0 !important;
-
                 padding: 0 !important;
-
             }
-
-
-            /* ENCABEZADO IMPRESIÓN */
 
             .encabezado {
-
                 background: white !important;
-
                 color: black !important;
-
                 border: none !important;
-
                 padding: 0 !important;
-
                 margin: 0 0 4px 0 !important;
-
                 text-align: center !important;
-
             }
-
 
             .logo {
-
-                width: 40px !important;
-
-                height: 40px !important;
-
+                width: 48px !important;
+                height: 48px !important;
                 margin: 0 auto 2px auto !important;
-
             }
-
 
             .encabezado h5 {
-
-                font-size: 9px !important;
-
-                line-height: 1 !important;
-
+                font-size: 10px !important;
+                line-height: 1.05 !important;
                 margin: 0 !important;
-
             }
-
 
             .encabezado h2 {
-
-                font-size: 12px !important;
-
+                font-size: 14px !important;
+                line-height: 1.05 !important;
                 margin: 2px 0 0 0 !important;
-
-                font-weight: bold;
-
+                font-weight: 700 !important;
             }
-
-
-            /* TARJETAS */
 
             .card {
-
                 border: none !important;
-
                 box-shadow: none !important;
-
+                margin: 0 !important;
             }
-
 
             .card-body {
-
                 padding: 1px !important;
-
             }
-
 
             .datos-reporte {
-
-                margin-bottom: 3px !important;
-
-                font-size: 7px !important;
-
+                margin: 2px 0 4px 0 !important;
+                font-size: 9px !important;
+                font-weight: 500;
             }
 
+            .datos-reporte .row {
+                margin: 0 !important;
+            }
 
-            /* TABLA */
+            .datos-reporte .col-md-3 {
+                padding: 0 3px !important;
+            }
 
             .tabla-contenedor {
-
+                width: 100% !important;
                 overflow: visible !important;
-
+                padding: 0 !important;
             }
-
 
             table {
-
                 width: 100% !important;
-
                 table-layout: fixed !important;
-
                 border-collapse: collapse !important;
-
+                border-spacing: 0 !important;
                 margin: 0 !important;
-
-                font-size: 5.8px !important;
-
-                white-space: normal !important;
-
+                font-size: 8px !important;
+                line-height: 1.05 !important;
             }
-
 
             thead {
-
                 display: table-header-group;
-
             }
-
 
             tr {
-
                 page-break-inside: avoid !important;
-
             }
-
 
             th,
             td {
-
                 border: 1px solid #000 !important;
-
-                padding: 1px !important;
-
-                line-height: 1 !important;
-
+                padding: 1.5px 1px !important;
+                line-height: 1.05 !important;
                 vertical-align: middle !important;
-
+                overflow: hidden !important;
             }
-
 
             th {
-
+                height: 24px !important;
                 background: #e9ecef !important;
-
                 color: black !important;
-
                 text-align: center !important;
-
-                font-weight: bold;
-
+                font-size: 8px !important;
+                font-weight: 700 !important;
                 -webkit-print-color-adjust: exact;
-
                 print-color-adjust: exact;
-
             }
 
+            tbody td {
+                height: 16px !important;
+                font-size: 8px !important;
+            }
 
+            /* N° */
             th:nth-child(1),
             td:nth-child(1) {
-
-                width: 18px !important;
-
+                width: 6mm !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 7.5px !important;
             }
 
-
+            /* C.I. */
             th:nth-child(2),
             td:nth-child(2) {
-
-                width: 43px !important;
-
+                width: 17mm !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 7.5px !important;
             }
 
-
+            /* ALUMNO: columna principal */
             th:nth-child(3),
             td:nth-child(3) {
-
-                width: 120px !important;
-
-                white-space: normal !important;
-
-                font-size: 5.7px !important;
-
+                width: 92mm !important;
+                min-width: 92mm !important;
+                max-width: 92mm !important;
             }
 
+            th:nth-child(3) {
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 8.5px !important;
+            }
+
+            td:nth-child(3) {
+                text-align: left !important;
+                white-space: nowrap !important;
+                font-size: 8.5px !important;
+                font-weight: 600 !important;
+                letter-spacing: -0.10px !important;
+                text-overflow: clip !important;
+            }
 
             .nombre-alumno {
-
-                min-width: 0 !important;
-
+                min-width: 92mm !important;
+                width: 92mm !important;
+                max-width: 92mm !important;
             }
 
-
+            /* Días: compactos para liberar espacio al nombre */
             .celda-dia {
-
                 min-width: 0 !important;
-
                 width: auto !important;
-
-                font-size: 5.5px !important;
-
+                max-width: none !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 7.5px !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
             }
 
+            .celda-dia small {
+                font-size: 6.5px !important;
+                line-height: 1 !important;
+            }
+
+            /* P, A y %: las tres últimas columnas */
+            th:nth-last-child(3),
+            td:nth-last-child(3),
+            th:nth-last-child(2),
+            td:nth-last-child(2) {
+                width: 7mm !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 7.5px !important;
+            }
+
+            th:last-child,
+            td:last-child {
+                width: 11mm !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                font-size: 7.5px !important;
+            }
 
             .presente,
             .completo,
             .ausente,
             .pendiente {
-
                 color: black !important;
-
+                font-weight: 700 !important;
                 -webkit-print-color-adjust: exact;
-
                 print-color-adjust: exact;
-
             }
-
         }
 
     </style>
@@ -445,14 +423,16 @@
 <div class="container-fluid py-4">
 
 
-    <!-- =====================================================
+    <!-- =======================================================
          ENCABEZADO
-         ===================================================== -->
+         ======================================================= -->
 
     <div class="encabezado mb-4">
 
         <div class="text-center">
 
+
+            <!-- LOGO CENTRADO -->
 
             <img
                 src="{% static 'asistencia/img/logo_colegio.png' %}"
@@ -477,7 +457,7 @@
 
             <h2 class="mt-2 mb-0">
 
-                PLANILLA MENSUAL DE ASISTENCIA
+                PLANILLA MENSUAL DE ENTRADA Y SALIDA
 
             </h2>
 
@@ -488,9 +468,9 @@
 
 
 
-    <!-- =====================================================
+    <!-- =======================================================
          FILTROS
-         ===================================================== -->
+         ======================================================= -->
 
     <div class="card shadow-sm mb-4 no-imprimir">
 
@@ -510,7 +490,9 @@
                     <label
                         class="form-label fw-bold"
                     >
+
                         Curso
+
                     </label>
 
 
@@ -519,18 +501,23 @@
                         class="form-select"
                     >
 
+
                         {% for c in cursos %}
 
                             <option
                                 value="{{ c }}"
+
                                 {% if c == curso %}
                                     selected
                                 {% endif %}
                             >
+
                                 {{ c }}
+
                             </option>
 
                         {% endfor %}
+
 
                     </select>
 
@@ -545,7 +532,9 @@
                     <label
                         class="form-label fw-bold"
                     >
+
                         Mes
+
                     </label>
 
 
@@ -554,18 +543,23 @@
                         class="form-select"
                     >
 
+
                         {% for numero, nombre in meses %}
 
                             <option
                                 value="{{ numero }}"
+
                                 {% if numero == mes %}
                                     selected
                                 {% endif %}
                             >
+
                                 {{ nombre }}
+
                             </option>
 
                         {% endfor %}
+
 
                     </select>
 
@@ -580,7 +574,9 @@
                     <label
                         class="form-label fw-bold"
                     >
+
                         Año
+
                     </label>
 
 
@@ -588,8 +584,6 @@
                         type="number"
                         name="anio"
                         value="{{ anio }}"
-                        min="2020"
-                        max="2100"
                         class="form-control"
                     >
 
@@ -621,15 +615,16 @@
 
 
 
-    <!-- =====================================================
-         DATOS DEL REPORTE
-         ===================================================== -->
+    <!-- =======================================================
+         INFORMACIÓN
+         ======================================================= -->
 
     <div
         class="card shadow-sm mb-3 datos-reporte"
     >
 
         <div class="card-body">
+
 
             <div class="row">
 
@@ -686,9 +681,9 @@
 
 
 
-    <!-- =====================================================
+    <!-- =======================================================
          PLANILLA
-         ===================================================== -->
+         ======================================================= -->
 
     <div class="card shadow-sm">
 
@@ -703,6 +698,10 @@
             >
 
 
+                <!-- =================================================
+                     ENCABEZADO TABLA
+                     ================================================= -->
+
                 <thead class="table-dark">
 
 
@@ -710,33 +709,41 @@
 
 
                         <th>
+
                             N°
+
                         </th>
 
 
                         <th>
+
                             C.I.
+
                         </th>
 
 
                         <th class="nombre-alumno">
+
                             ALUMNO
+
                         </th>
 
 
+
+                        <!-- DÍAS DEL MES -->
+
                         {% for dia in dias %}
 
-                            <th
-                                class="celda-dia"
-                                title="{{ dia.fecha|date:'d/m/Y' }}"
-                            >
+                            <th class="celda-dia">
 
                                 {{ dia.numero }}
 
                                 <br>
 
                                 <small>
+
                                     {{ dia.dia_semana }}
+
                                 </small>
 
                             </th>
@@ -744,19 +751,11 @@
                         {% endfor %}
 
 
-                        <th>
-                            P
-                        </th>
 
-
-                        <th>
-                            A
-                        </th>
-
-
-                        <th>
-                            %
-                        </th>
+                        <th>JC</th>
+                        <th>SE</th>
+                        <th>A</th>
+                        <th>%</th>
 
 
                     </tr>
@@ -764,6 +763,11 @@
 
                 </thead>
 
+
+
+                <!-- =================================================
+                     CUERPO
+                     ================================================= -->
 
                 <tbody>
 
@@ -774,12 +778,17 @@
                         <tr>
 
 
+                            <!-- NÚMERO -->
+
                             <td class="text-center">
 
                                 {{ fila.numero }}
 
                             </td>
 
+
+
+                            <!-- CÉDULA -->
 
                             <td>
 
@@ -788,7 +797,10 @@
                             </td>
 
 
-                            <td>
+
+                            <!-- ALUMNO -->
+
+                            <td class="alumno-texto">
 
                                 <strong>
 
@@ -800,6 +812,9 @@
                             </td>
 
 
+
+                            <!-- DÍAS -->
+
                             {% for celda in fila.celdas %}
 
 
@@ -809,7 +824,9 @@
                                         class="completo celda-dia"
                                         title="Jornada completa"
                                     >
-                                        P
+
+                                        C
+
                                     </td>
 
 
@@ -819,7 +836,9 @@
                                         class="presente celda-dia"
                                         title="Entrada registrada"
                                     >
-                                        P
+
+                                        E
+
                                     </td>
 
 
@@ -829,7 +848,9 @@
                                         class="ausente celda-dia"
                                         title="Ausente"
                                     >
+
                                         A
+
                                     </td>
 
 
@@ -839,7 +860,9 @@
                                         class="pendiente celda-dia"
                                         title="Fecha pendiente"
                                     >
+
                                         -
+
                                     </td>
 
 
@@ -849,26 +872,26 @@
                             {% endfor %}
 
 
-                            <td
-                                class="text-center fw-bold"
-                            >
-                                {{ fila.presentes }}
+
+                            <!-- JORNADAS COMPLETAS -->
+                            <td class="text-center fw-bold">
+                                {{ fila.jornadas_completas }}
                             </td>
 
+                            <!-- SOLO ENTRADA -->
+                            <td class="text-center fw-bold">
+                                {{ fila.solo_entrada }}
+                            </td>
 
-                            <td
-                                class="text-center fw-bold"
-                            >
+                            <!-- AUSENTES -->
+                            <td class="text-center fw-bold">
                                 {{ fila.ausentes }}
                             </td>
 
-
-                            <td
-                                class="text-center fw-bold"
-                            >
+                            <!-- PORCENTAJE -->
+                            <td class="text-center fw-bold">
                                 {{ fila.porcentaje }}%
                             </td>
-
 
                         </tr>
 
@@ -877,6 +900,7 @@
 
 
                         <tr>
+
 
                             <td
                                 colspan="40"
@@ -887,6 +911,7 @@
                                 para este curso.
 
                             </td>
+
 
                         </tr>
 
@@ -906,28 +931,40 @@
 
 
 
-    <!-- =====================================================
+    <!-- =======================================================
          LEYENDA
-         ===================================================== -->
+         ======================================================= -->
 
-    <div class="mt-3 no-imprimir">
+    <div
+        class="mt-3 no-imprimir"
+    >
 
 
-        <span class="badge text-bg-success">
+        <span
+            class="badge text-bg-success"
+        >
 
-            P = Presente
+            C = Jornada completa
+
+        </span>
+
+
+        <span
+            class="badge text-bg-danger"
+        >
+
+            E = Solo entrada
 
         </span>
 
 
         <span class="badge text-bg-danger">
-
             A = Ausente
-
         </span>
 
-
-        <span class="badge text-bg-warning">
+        <span
+            class="badge text-bg-warning"
+        >
 
             - = Fecha pendiente
 
@@ -938,12 +975,28 @@
 
 
 
-    <!-- =====================================================
+    <!-- =======================================================
          BOTONES
-         ===================================================== -->
+         ======================================================= -->
 
-    <div class="mt-4 no-imprimir">
+    <div
+        class="mt-4 no-imprimir"
+    >
 
+
+        <a
+            href="{% url 'exportar_reporte_mensual_excel' %}?curso={{ curso|urlencode }}&mes={{ mes }}&anio={{ anio }}"
+            class="btn btn-primary"
+        >
+            📊 Exportar Excel
+        </a>
+
+        <a
+            href="{% url 'exportar_reporte_mensual_pdf' %}?curso={{ curso|urlencode }}&mes={{ mes }}&anio={{ anio }}"
+            class="btn btn-danger"
+        >
+            📄 Exportar PDF
+        </a>
 
         <button
             onclick="window.print()"
@@ -953,16 +1006,6 @@
             🖨️ Imprimir planilla
 
         </button>
-
-
-        <a
-            href="{% url 'exportar_reporte_mensual_excel' %}?curso={{ curso|urlencode }}&mes={{ mes }}&anio={{ anio }}"
-            class="btn btn-primary"
-        >
-
-            📊 Exportar a Excel
-
-        </a>
 
 
         <a
