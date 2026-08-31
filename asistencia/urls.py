@@ -21,5 +21,11 @@ urlpatterns = [
         views.probar_asistencia,
         name="probar_asistencia"
     ),
+    
+    path(
+    "api/asistencia/cedula/",
+    views.registrar_por_cedula,
+    name="registrar_por_cedula"
+),
 
 ]

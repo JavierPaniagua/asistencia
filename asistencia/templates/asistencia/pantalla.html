@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,28 +14,362 @@
 
     <title>Sistema de Asistencia</title>
 
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
     <style>
 
+        :root {
+            --azul-oscuro: #00396f;
+            --azul: #0057a5;
+            --azul-claro: #0874c9;
+            --amarillo: #ffd400;
+            --verde: #27e85d;
+            --rojo: #ff4d4d;
+            --blanco: #ffffff;
+        }
+
         * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
 
-            font-family: Arial, Helvetica, sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #003b7a,
-                    #0056a6
-                );
-
             min-height: 100vh;
 
             color: white;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #0874c9 0%,
+                    #0057a5 45%,
+                    #00396f 100%
+                );
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           MARCO
+        ===================================================== */
+
+        .marco {
+
+            position: fixed;
+
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+
+            border:
+                4px solid
+                var(--amarillo);
+
+            border-radius: 30px;
+
+            pointer-events: none;
+
+            z-index: 100;
+
+        }
+
+
+        /* =====================================================
+           PANTALLA
+        ===================================================== */
+
+        .pantalla {
+
+            width: 100%;
+
+            min-height: 100vh;
+
+            padding:
+                20px
+                clamp(
+                    25px,
+                    4vw,
+                    70px
+                );
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+        }
+
+
+        /* =====================================================
+           CABECERA
+        ===================================================== */
+
+        .cabecera {
+
+            text-align: center;
+
+        }
+
+
+        .logo-colegio {
+
+            width:
+                clamp(
+                    65px,
+                    7vw,
+                    100px
+                );
+
+            height:
+                clamp(
+                    65px,
+                    7vw,
+                    100px
+                );
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 5px 7px
+                    rgba(0,0,0,0.35)
+                );
+
+        }
+
+
+        .nombre-colegio {
+
+            margin-top: 2px;
+
+            font-size:
+                clamp(
+                    15px,
+                    1.5vw,
+                    23px
+                );
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .subtitulo-colegio {
+
+            font-size:
+                clamp(
+                    11px,
+                    1vw,
+                    16px
+                );
+
+            color: #d8ebff;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .linea {
+
+            width:
+                min(
+                    450px,
+                    60%
+                );
+
+            height: 3px;
+
+            margin:
+                7px auto 0;
+
+            border-radius: 10px;
+
+            background:
+                var(--amarillo);
+
+        }
+
+
+        /* =====================================================
+           TITULO
+        ===================================================== */
+
+        .titulo {
+
+            text-align: center;
+
+            color:
+                var(--amarillo);
+
+            font-size:
+                clamp(
+                    22px,
+                    2.2vw,
+                    36px
+                );
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        /* =====================================================
+           INFORMACIÓN DE CLASE
+        ===================================================== */
+
+        .informacion-clase {
+
+            width:
+                min(
+                    900px,
+                    94vw
+                );
+
+            margin:
+                0 auto;
+
+            padding:
+                12px 20px;
+
+            border-radius: 20px;
+
+            border:
+                2px solid
+                rgba(
+                    39,
+                    232,
+                    93,
+                    0.60
+                );
+
+            background:
+                rgba(
+                    0,
+                    50,
+                    85,
+                    0.75
+                );
+
+            text-align: center;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.22
+                );
+
+        }
+
+
+        .estado-clase {
+
+            color:
+                #bfffcf;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .materia-actual {
+
+            color:
+                var(--amarillo);
+
+            font-size:
+                clamp(
+                    19px,
+                    1.8vw,
+                    29px
+                );
+
+            font-weight: 900;
+
+        }
+
+
+        .detalle-clase {
+
+            margin-top: 2px;
+
+            color: white;
+
+            font-size:
+                clamp(
+                    13px,
+                    1.2vw,
+                    18px
+                );
+
+            font-weight: 700;
+
+        }
+
+
+        /* =====================================================
+           SIN CLASE
+        ===================================================== */
+
+        .informacion-clase.sin-clase {
+
+            border-color:
+                rgba(
+                    255,
+                    212,
+                    0,
+                    0.60
+                );
+
+        }
+
+
+        .informacion-clase.sin-clase
+        .estado-clase {
+
+            color:
+                var(--amarillo);
+
+        }
+
+
+        /* =====================================================
+           CENTRO
+        ===================================================== */
+
+        .centro {
+
+            flex: 1;
 
             display: flex;
 
@@ -41,29 +377,73 @@
 
             align-items: center;
 
-            overflow: hidden;
         }
 
 
-        /* ==========================================
-           CONTENEDOR
-        ========================================== */
+        /* =====================================================
+           PANEL
+        ===================================================== */
 
-        .contenedor {
+        .panel-rfid {
 
-            width: 94%;
+            position: relative;
 
-            max-width: 1200px;
+            width:
+                min(
+                    1050px,
+                    86vw
+                );
 
-            min-height: 90vh;
+            min-height:
+                clamp(
+                    330px,
+                    45vh,
+                    490px
+                );
 
-            border: 5px solid #ffd700;
+            padding:
+                clamp(
+                    18px,
+                    2vh,
+                    28px
+                );
 
-            border-radius: 30px;
+            border-radius: 35px;
 
-            padding: 30px;
+            border:
+                2px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.25
+                );
 
-            text-align: center;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(
+                        0,
+                        67,
+                        125,
+                        0.92
+                    ),
+                    rgba(
+                        0,
+                        44,
+                        88,
+                        0.95
+                    )
+                );
+
+            box-shadow:
+                0 20px 50px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.30
+                );
 
             display: flex;
 
@@ -73,202 +453,569 @@
 
             align-items: center;
 
-            position: relative;
+            text-align: center;
 
-            box-shadow:
-                0 0 40px rgba(0,0,0,0.4);
+            transition: 0.3s;
+
         }
 
 
-        /* ==========================================
-           INSTITUCIÓN
-        ========================================== */
+        /* =====================================================
+           ONDAS
+        ===================================================== */
 
-        .institucion {
+        .onda {
 
             position: absolute;
 
-            top: 25px;
+            top: 60px;
 
-            width: 100%;
+            font-size:
+                clamp(
+                    45px,
+                    5vw,
+                    75px
+                );
 
-            padding: 0 20px;
-        }
+            color:
+                rgba(
+                    255,
+                    212,
+                    0,
+                    0.40
+                );
 
-        .institucion h2 {
-
-            color: #ffd700;
-
-            font-size: 25px;
-
-            margin-bottom: 5px;
-        }
-
-        .institucion p {
-
-            font-size: 19px;
-
-            font-weight: bold;
         }
 
 
-        /* ==========================================
-           TÍTULO
-        ========================================== */
+        .onda-izquierda {
 
-        .titulo {
+            left: 13%;
 
-            font-size: 45px;
-
-            color: #ffd700;
-
-            margin-bottom: 25px;
         }
 
 
-        /* ==========================================
+        .onda-derecha {
+
+            right: 13%;
+
+            transform:
+                rotate(
+                    180deg
+                );
+
+        }
+
+
+        /* =====================================================
            ICONO
-        ========================================== */
+        ===================================================== */
 
-        .icono {
+        .circulo-rfid {
 
-            font-size: 100px;
+            width:
+                clamp(
+                    85px,
+                    9vw,
+                    130px
+                );
 
-            margin-bottom: 20px;
+            height:
+                clamp(
+                    85px,
+                    9vw,
+                    130px
+                );
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size:
+                clamp(
+                    42px,
+                    4vw,
+                    65px
+                );
+
+            margin-bottom: 12px;
+
+            background:
+                rgba(
+                    255,
+                    212,
+                    0,
+                    0.12
+                );
+
+            border:
+                3px solid
+                rgba(
+                    255,
+                    212,
+                    0,
+                    0.80
+                );
+
         }
 
 
-        /* ==========================================
+        /* =====================================================
            NOMBRE
-        ========================================== */
+        ===================================================== */
 
         #nombre {
 
-            font-size: 55px;
+            font-size:
+                clamp(
+                    23px,
+                    2.5vw,
+                    40px
+                );
 
-            font-weight: bold;
-
-            margin-bottom: 15px;
+            font-weight: 900;
 
             text-transform: uppercase;
+
+            line-height: 1.1;
+
         }
 
-
-        /* ==========================================
-           CURSO
-        ========================================== */
 
         #curso {
 
-            font-size: 35px;
+            margin-top: 5px;
 
-            color: #ffd700;
+            color:
+                var(--amarillo);
 
-            font-weight: bold;
+            font-size:
+                clamp(
+                    17px,
+                    1.6vw,
+                    26px
+                );
 
-            margin-bottom: 20px;
+            font-weight: 800;
+
         }
 
-
-        /* ==========================================
-           MENSAJE
-        ========================================== */
 
         #mensaje {
 
-            font-size: 30px;
+            margin-top: 8px;
 
-            margin-bottom: 25px;
+            color: #d7ebff;
+
+            font-size:
+                clamp(
+                    14px,
+                    1.2vw,
+                    20px
+                );
+
         }
 
-
-        /* ==========================================
-           HORA DEL REGISTRO
-        ========================================== */
 
         #hora-registro {
 
-            font-size: 25px;
+            margin-top: 5px;
 
-            margin-top: 10px;
+            font-size:
+                clamp(
+                    13px,
+                    1.1vw,
+                    18px
+                );
+
         }
 
 
-        /* ==========================================
-           RELOJ
-        ========================================== */
+        /* =====================================================
+           SISTEMA LISTO
+        ===================================================== */
+
+        .sistema-listo {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            margin-top: 10px;
+
+            color: #bfffcf;
+
+            font-size: 14px;
+
+        }
+
+
+        .luz {
+
+            width: 11px;
+
+            height: 11px;
+
+            border-radius: 50%;
+
+            background:
+                var(--verde);
+
+            box-shadow:
+                0 0 12px
+                var(--verde);
+
+        }
+
+
+        /* =====================================================
+           CÉDULA
+        ===================================================== */
+
+        .separador-cedula {
+
+            display: flex;
+
+            align-items: center;
+
+            width:
+                min(
+                    500px,
+                    90%
+                );
+
+            gap: 12px;
+
+            margin-top: 13px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .separador-cedula::before,
+        .separador-cedula::after {
+
+            content: "";
+
+            flex: 1;
+
+            height: 1px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.25
+                );
+
+        }
+
+
+        .separador-cedula span {
+
+            color: #b8d9f5;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+
+        .registro-cedula {
+
+            width:
+                min(
+                    560px,
+                    92%
+                );
+
+            display: flex;
+
+            gap: 10px;
+
+            justify-content: center;
+
+        }
+
+
+        .input-cedula {
+
+            flex: 1;
+
+            min-width: 0;
+
+            height: 48px;
+
+            border-radius: 14px;
+
+            border:
+                2px solid
+                rgba(
+                    255,
+                    212,
+                    0,
+                    0.60
+                );
+
+            padding:
+                0 18px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.10
+                );
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            outline: none;
+
+        }
+
+
+        .input-cedula::placeholder {
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.65
+                );
+
+        }
+
+
+        .btn-registrar {
+
+            min-width: 190px;
+
+            height: 48px;
+
+            padding:
+                0 20px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background:
+                var(--amarillo);
+
+            color:
+                var(--azul-oscuro);
+
+            font-size: 15px;
+
+            font-weight: 900;
+
+            cursor: pointer;
+
+        }
+
+
+        .btn-registrar:disabled {
+
+            opacity: 0.55;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* =====================================================
+           SONIDO
+        ===================================================== */
+
+        .btn-sonido {
+
+            margin-top: 9px;
+
+            padding:
+                6px 16px;
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.25
+                );
+
+            border-radius: 20px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+            color: #d8ebff;
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+        }
+
+
+        .btn-sonido.activo {
+
+            color: #bfffcf;
+
+        }
+
+
+        /* =====================================================
+           REGISTRADO
+        ===================================================== */
+
+        .panel-rfid.registrado {
+
+            border-color:
+                var(--verde);
+
+            box-shadow:
+                0 0 40px
+                rgba(
+                    39,
+                    232,
+                    93,
+                    0.25
+                );
+
+        }
+
+
+        /* =====================================================
+           DUPLICADO
+        ===================================================== */
+
+        .panel-rfid.duplicado {
+
+            border-color:
+                var(--amarillo);
+
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .panel-rfid.error {
+
+            border-color:
+                var(--rojo);
+
+            box-shadow:
+                0 0 40px
+                rgba(
+                    255,
+                    77,
+                    77,
+                    0.25
+                );
+
+        }
+
+
+        /* =====================================================
+           PIE
+        ===================================================== */
+
+        .pie {
+
+            text-align: center;
+
+            padding-bottom: 5px;
+
+        }
+
 
         #reloj {
 
-            position: absolute;
+            color:
+                var(--amarillo);
 
-            bottom: 55px;
+            font-size:
+                clamp(
+                    24px,
+                    2.3vw,
+                    38px
+                );
 
-            font-size: 42px;
+            font-weight: 900;
 
-            font-weight: bold;
-
-            color: #ffd700;
         }
 
 
         #fecha {
 
-            position: absolute;
+            color: #d8ebff;
 
-            bottom: 25px;
+            font-size:
+                clamp(
+                    11px,
+                    1vw,
+                    15px
+                );
 
-            font-size: 20px;
+            text-transform: capitalize;
+
         }
 
 
-        /* ==========================================
-           ESTADOS
-        ========================================== */
+        /* =====================================================
+           CELULAR
+        ===================================================== */
 
-        .correcto {
+        @media (max-width: 700px) {
 
-            color: #ffffff;
-        }
+            body {
 
+                overflow-y: auto;
 
-        .advertencia {
-
-            color: #ffd700;
-        }
-
-
-        .error {
-
-            color: #ffdddd;
-        }
-
-
-        /* ==========================================
-           ANIMACIÓN
-        ========================================== */
-
-        .animacion {
-
-            animation: aparecer 0.5s ease;
-        }
-
-
-        @keyframes aparecer {
-
-            from {
-
-                opacity: 0;
-
-                transform: scale(0.85);
             }
 
-            to {
+            .registro-cedula {
 
-                opacity: 1;
+                flex-direction: column;
 
-                transform: scale(1);
             }
+
+            .btn-registrar {
+
+                width: 100%;
+
+            }
+
+            .onda {
+
+                display: none;
+
+            }
+
         }
 
     </style>
@@ -279,140 +1026,538 @@
 <body>
 
 
-<div class="contenedor">
+<div class="marco"></div>
 
 
-    <!-- INSTITUCIÓN -->
+<div class="pantalla">
 
-    <div class="institucion">
 
-        <h2>
+    <!-- CABECERA -->
+
+    <header class="cabecera">
+
+        <img
+            src="{% static 'asistencia/img/logo_colegio.png' %}"
+            class="logo-colegio"
+            alt="Logo del colegio"
+        >
+
+        <div class="nombre-colegio">
+
             COLEGIO NACIONAL
-        </h2>
 
-        <p>
+        </div>
+
+        <div class="subtitulo-colegio">
+
             GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
-        </p>
+
+        </div>
+
+        <div class="linea"></div>
+
+    </header>
+
+
+    <!-- TÍTULO -->
+
+    <div class="titulo">
+
+        SISTEMA DE ASISTENCIA
 
     </div>
 
 
+    <!-- CLASE ACTUAL -->
 
-    <!-- CONTENIDO PRINCIPAL -->
-
-    <div id="contenido">
-
-
-        <h1 class="titulo">
-            SISTEMA DE ASISTENCIA
-        </h1>
-
+    <div
+        id="informacion-clase"
+        class="informacion-clase sin-clase"
+    >
 
         <div
-            id="icono"
-            class="icono"
+            id="estado-clase"
+            class="estado-clase"
         >
-            📡
-        </div>
 
-
-        <div id="nombre">
-
-            Acerque su tarjeta RFID
+            CONSULTANDO HORARIO...
 
         </div>
 
+        <div
+            id="materia-actual"
+            class="materia-actual"
+        >
 
-        <div id="curso">
-
-        </div>
-
-
-        <div id="mensaje">
-
-            Esperando identificación...
+            -
 
         </div>
 
-
-        <div id="hora-registro">
-
-        </div>
-
+        <div
+            id="detalle-clase"
+            class="detalle-clase"
+        ></div>
 
     </div>
 
 
+    <!-- PANEL CENTRAL -->
 
-    <!-- RELOJ -->
+    <div class="centro">
 
-    <div id="reloj">
+        <main
+            id="contenido"
+            class="panel-rfid"
+        >
 
-        00:00:00
+
+            <div class="onda onda-izquierda">
+
+                )))
+
+            </div>
+
+
+            <div class="onda onda-derecha">
+
+                )))
+
+            </div>
+
+
+            <div
+                id="icono"
+                class="circulo-rfid"
+            >
+
+                🕒
+
+            </div>
+
+
+            <div id="nombre">
+
+                CONSULTANDO HORARIO
+
+            </div>
+
+
+            <div id="curso"></div>
+
+
+            <div id="mensaje">
+
+                Espere un momento...
+
+            </div>
+
+
+            <div id="hora-registro"></div>
+
+
+            <div
+                id="sistema-listo"
+                class="sistema-listo"
+                style="display:none;"
+            >
+
+                <span class="luz"></span>
+
+                <span>
+
+                    Sistema listo para registrar
+
+                </span>
+
+            </div>
+
+
+            <div
+                id="zona-cedula"
+                class="separador-cedula"
+                style="display:none;"
+            >
+
+                <span>
+
+                    O REGISTRE POR CÉDULA
+
+                </span>
+
+            </div>
+
+
+            <form
+                id="form-cedula"
+                class="registro-cedula"
+                style="display:none;"
+            >
+
+                <input
+                    type="text"
+                    id="cedula"
+                    class="input-cedula"
+                    placeholder="Número de cédula"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    maxlength="10"
+                >
+
+                <button
+                    type="submit"
+                    id="btn-registrar"
+                    class="btn-registrar"
+                >
+
+                    REGISTRAR ASISTENCIA
+
+                </button>
+
+            </form>
+
+
+            <button
+                type="button"
+                id="btn-sonido"
+                class="btn-sonido"
+            >
+
+                🔊 Activar sonido
+
+            </button>
+
+
+        </main>
 
     </div>
 
 
-    <div id="fecha">
+    <!-- PIE -->
 
-    </div>
+    <footer class="pie">
+
+        <div id="reloj">
+
+            00:00:00
+
+        </div>
+
+        <div id="fecha"></div>
+
+    </footer>
 
 
 </div>
 
 
+<!-- SONIDOS -->
+
+<audio
+    id="audio-registrado"
+    preload="auto"
+    src="{% static 'asistencia/sonidos/registrado.mp3' %}"
+></audio>
+
+<audio
+    id="audio-duplicado"
+    preload="auto"
+    src="{% static 'asistencia/sonidos/duplicado.mp3' %}"
+></audio>
+
+<audio
+    id="audio-error"
+    preload="auto"
+    src="{% static 'asistencia/sonidos/error.mp3' %}"
+></audio>
+
 
 <script>
 
 
-// ============================================================
-// VARIABLES
-// ============================================================
+/* ==========================================================
+   VARIABLES
+========================================================== */
 
 let ultimoEvento = 0;
 
 let temporizador = null;
 
+let sonidoActivo = false;
 
-// ============================================================
-// RELOJ
-// ============================================================
+let enviandoCedula = false;
+
+let claseActiva = false;
+
+let materiaActiva = "";
+
+let cursoActivo = "";
+
+let horaInicio = "";
+
+let horaFin = "";
+
+
+/* ==========================================================
+   ELEMENTOS
+========================================================== */
+
+const contenido =
+    document.getElementById(
+        "contenido"
+    );
+
+const icono =
+    document.getElementById(
+        "icono"
+    );
+
+const nombre =
+    document.getElementById(
+        "nombre"
+    );
+
+const curso =
+    document.getElementById(
+        "curso"
+    );
+
+const mensaje =
+    document.getElementById(
+        "mensaje"
+    );
+
+const horaRegistro =
+    document.getElementById(
+        "hora-registro"
+    );
+
+const sistemaListo =
+    document.getElementById(
+        "sistema-listo"
+    );
+
+const formularioCedula =
+    document.getElementById(
+        "form-cedula"
+    );
+
+const inputCedula =
+    document.getElementById(
+        "cedula"
+    );
+
+const botonRegistrar =
+    document.getElementById(
+        "btn-registrar"
+    );
+
+const botonSonido =
+    document.getElementById(
+        "btn-sonido"
+    );
+
+const zonaCedula =
+    document.getElementById(
+        "zona-cedula"
+    );
+
+const informacionClase =
+    document.getElementById(
+        "informacion-clase"
+    );
+
+const estadoClase =
+    document.getElementById(
+        "estado-clase"
+    );
+
+const materiaActual =
+    document.getElementById(
+        "materia-actual"
+    );
+
+const detalleClase =
+    document.getElementById(
+        "detalle-clase"
+    );
+
+
+/* ==========================================================
+   AUDIO
+========================================================== */
+
+const audioRegistrado =
+    document.getElementById(
+        "audio-registrado"
+    );
+
+const audioDuplicado =
+    document.getElementById(
+        "audio-duplicado"
+    );
+
+const audioError =
+    document.getElementById(
+        "audio-error"
+    );
+
+
+audioRegistrado.volume = 0.90;
+
+audioDuplicado.volume = 0.85;
+
+audioError.volume = 0.80;
+
+
+function detenerSonidos() {
+
+    [
+        audioRegistrado,
+        audioDuplicado,
+        audioError
+    ].forEach(
+
+        function(audio) {
+
+            audio.pause();
+
+            audio.currentTime = 0;
+
+        }
+
+    );
+
+}
+
+
+function reproducirAudio(audio) {
+
+    if (!sonidoActivo) {
+
+        return;
+
+    }
+
+    detenerSonidos();
+
+    audio.currentTime = 0;
+
+    audio.play().catch(
+
+        function(error) {
+
+            console.log(
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+botonSonido.addEventListener(
+
+    "click",
+
+    async function() {
+
+        sonidoActivo = true;
+
+        try {
+
+            const volumen =
+                audioRegistrado.volume;
+
+            audioRegistrado.volume = 0;
+
+            await audioRegistrado.play();
+
+            audioRegistrado.pause();
+
+            audioRegistrado.currentTime = 0;
+
+            audioRegistrado.volume =
+                volumen;
+
+        }
+
+        catch(error) {
+
+            console.log(
+                error
+            );
+
+        }
+
+
+        botonSonido.textContent =
+            "🔊 Sonido activado";
+
+        botonSonido.classList.add(
+            "activo"
+        );
+
+        botonSonido.disabled =
+            true;
+
+    }
+
+);
+
+
+/* ==========================================================
+   RELOJ
+========================================================== */
 
 function actualizarReloj() {
 
-    const ahora = new Date();
-
-
-    const hora = ahora.toLocaleTimeString(
-        "es-PY",
-        {
-            hour12: false
-        }
-    );
-
-
-    const fecha = ahora.toLocaleDateString(
-        "es-PY",
-        {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-        }
-    );
+    const ahora =
+        new Date();
 
 
     document.getElementById(
         "reloj"
-    ).textContent = hora;
+    ).textContent =
+
+        ahora.toLocaleTimeString(
+
+            "es-PY",
+
+            {
+                hour12: false
+            }
+
+        );
 
 
     document.getElementById(
         "fecha"
-    ).textContent = fecha;
+    ).textContent =
+
+        ahora.toLocaleDateString(
+
+            "es-PY",
+
+            {
+
+                weekday: "long",
+
+                year: "numeric",
+
+                month: "long",
+
+                day: "numeric"
+
+            }
+
+        );
 
 }
 
+
+actualizarReloj();
 
 setInterval(
     actualizarReloj,
@@ -420,256 +1565,793 @@ setInterval(
 );
 
 
-actualizarReloj();
+/* ==========================================================
+   SIN CLASE PROGRAMADA
+========================================================== */
 
+function mostrarSinClase() {
 
-// ============================================================
-// PANTALLA DE ESPERA
-// ============================================================
+    claseActiva = false;
 
-function mostrarEspera() {
+    materiaActiva = "";
 
+    cursoActivo = "";
 
-    document.getElementById(
-        "icono"
-    ).textContent = "📡";
+    horaInicio = "";
 
+    horaFin = "";
 
-    document.getElementById(
-        "nombre"
-    ).textContent =
-        "Acerque su tarjeta RFID";
-
-
-    document.getElementById(
-        "curso"
-    ).textContent = "";
-
-
-    document.getElementById(
-        "mensaje"
-    ).textContent =
-        "Esperando identificación...";
-
-
-    document.getElementById(
-        "hora-registro"
-    ).textContent = "";
-
-
-    document.getElementById(
-        "contenido"
-    ).className = "animacion";
-}
-
-
-// ============================================================
-// MOSTRAR REGISTRO
-// ============================================================
-
-function mostrarRegistro(data) {
-
-
-    const icono =
-        document.getElementById("icono");
-
-    const nombre =
-        document.getElementById("nombre");
-
-    const curso =
-        document.getElementById("curso");
-
-    const mensaje =
-        document.getElementById("mensaje");
-
-    const horaRegistro =
-        document.getElementById("hora-registro");
-
-
-
-    // --------------------------------------------------------
-    // REGISTRADO CORRECTAMENTE
-    // --------------------------------------------------------
-
-    if (data.estado === "registrado") {
-
-
-        icono.textContent = "✅";
-
-
-        nombre.textContent =
-            data.nombre;
-
-
-        curso.textContent =
-            data.curso;
-
-
-        mensaje.textContent =
-            "¡BIENVENIDO! " + data.mensaje;
-
-
-        mensaje.className =
-            "correcto";
-
-
-        horaRegistro.textContent =
-            "Hora de entrada: " + data.hora;
-    }
-
-
-    // --------------------------------------------------------
-    // YA REGISTRADO
-    // --------------------------------------------------------
-
-    else if (
-        data.estado === "ya_registrado"
-    ) {
-
-
-        icono.textContent = "⚠️";
-
-
-        nombre.textContent =
-            data.nombre;
-
-
-        curso.textContent =
-            data.curso;
-
-
-        mensaje.textContent =
-            "Su asistencia ya fue registrada hoy";
-
-
-        mensaje.className =
-            "advertencia";
-
-
-        horaRegistro.textContent =
-            "Registrado a las: " + data.hora;
-    }
-
-
-    // --------------------------------------------------------
-    // TARJETA DESCONOCIDA
-    // --------------------------------------------------------
-
-    else if (
-        data.estado === "no_encontrado"
-    ) {
-
-
-        icono.textContent = "❌";
-
-
-        nombre.textContent =
-            "TARJETA NO REGISTRADA";
-
-
-        curso.textContent = "";
-
-
-        mensaje.textContent =
-            "Comuníquese con el encargado";
-
-
-        mensaje.className =
-            "error";
-
-
-        horaRegistro.textContent =
-            "UID: " + data.uid;
-    }
-
-
-    document.getElementById(
-        "contenido"
-    ).className = "animacion";
-
-
-    // --------------------------------------------------------
-    // VOLVER A ESPERA DESPUÉS DE 5 SEGUNDOS
-    // --------------------------------------------------------
 
     clearTimeout(
         temporizador
     );
 
 
-    temporizador = setTimeout(
-        mostrarEspera,
-        5000
-    );
+    informacionClase.className =
+        "informacion-clase sin-clase";
+
+
+    estadoClase.textContent =
+        "SIN CLASE PROGRAMADA";
+
+
+    materiaActual.textContent =
+        "—";
+
+
+    detalleClase.textContent =
+        "No existe una materia programada para este horario";
+
+
+    contenido.className =
+        "panel-rfid";
+
+
+    icono.textContent =
+        "🕒";
+
+
+    nombre.textContent =
+        "SIN CLASE PROGRAMADA";
+
+
+    curso.textContent =
+        "";
+
+
+    mensaje.textContent =
+        "El registro de asistencia se habilitará automáticamente durante una clase";
+
+
+    horaRegistro.textContent =
+        "";
+
+
+    sistemaListo.style.display =
+        "none";
+
+
+    formularioCedula.style.display =
+        "none";
+
+
+    zonaCedula.style.display =
+        "none";
 
 }
 
 
-// ============================================================
-// CONSULTAR DJANGO
-// ============================================================
+/* ==========================================================
+   CLASE ACTIVA
+========================================================== */
+
+function mostrarClaseActiva(data) {
+
+    claseActiva = true;
+
+    materiaActiva =
+        data.materia || "";
+
+    cursoActivo =
+        data.curso || "";
+
+    horaInicio =
+        data.hora_inicio || "";
+
+    horaFin =
+        data.hora_fin || "";
+
+
+    informacionClase.className =
+        "informacion-clase";
+
+
+    estadoClase.textContent =
+        "● CLASE ACTUAL";
+
+
+    materiaActual.textContent =
+        materiaActiva;
+
+
+    let detalle =
+        cursoActivo;
+
+
+    if (
+        horaInicio &&
+        horaFin
+    ) {
+
+        if (detalle) {
+
+            detalle +=
+                " • ";
+
+        }
+
+        detalle +=
+            horaInicio
+            +
+            " - "
+            +
+            horaFin;
+
+    }
+
+
+    detalleClase.textContent =
+        detalle;
+
+
+    mostrarEspera();
+
+}
+
+
+/* ==========================================================
+   ESPERA RFID
+========================================================== */
+
+function mostrarEspera() {
+
+    if (!claseActiva) {
+
+        mostrarSinClase();
+
+        return;
+
+    }
+
+
+    clearTimeout(
+        temporizador
+    );
+
+
+    contenido.className =
+        "panel-rfid";
+
+
+    icono.textContent =
+        "📡";
+
+
+    nombre.textContent =
+        "Acerque su tarjeta RFID";
+
+
+    curso.textContent =
+        materiaActiva
+        +
+        (
+            cursoActivo
+            ? " • " + cursoActivo
+            : ""
+        );
+
+
+    mensaje.textContent =
+        "Esperando identificación...";
+
+
+    horaRegistro.textContent =
+        "";
+
+
+    sistemaListo.style.display =
+        "flex";
+
+
+    formularioCedula.style.display =
+        "flex";
+
+
+    zonaCedula.style.display =
+        "flex";
+
+
+    inputCedula.value =
+        "";
+
+
+    inputCedula.disabled =
+        false;
+
+
+    botonRegistrar.disabled =
+        false;
+
+
+    botonRegistrar.textContent =
+        "REGISTRAR ASISTENCIA";
+
+
+    enviandoCedula =
+        false;
+
+}
+
+
+/* ==========================================================
+   RESULTADO
+========================================================== */
+
+function mostrarRegistro(data) {
+
+    clearTimeout(
+        temporizador
+    );
+
+
+    sistemaListo.style.display =
+        "none";
+
+
+    formularioCedula.style.display =
+        "none";
+
+
+    zonaCedula.style.display =
+        "none";
+
+
+    if (
+        data.estado ===
+        "registrado"
+    ) {
+
+        contenido.className =
+            "panel-rfid registrado";
+
+
+        icono.textContent =
+            "✓";
+
+
+        nombre.textContent =
+            data.nombre ||
+            "ASISTENCIA REGISTRADA";
+
+
+        curso.textContent =
+            (data.curso || "")
+            +
+            (
+                data.materia
+                ? " • " + data.materia
+                : ""
+            );
+
+
+        mensaje.textContent =
+            "¡BIENVENIDO! Asistencia registrada correctamente";
+
+
+        horaRegistro.textContent =
+            data.hora
+            ? "Hora de entrada: " + data.hora
+            : "";
+
+
+        reproducirAudio(
+            audioRegistrado
+        );
+
+    }
+
+
+    else if (
+
+        data.estado ===
+        "ya_registrado"
+
+        ||
+
+        data.estado ===
+        "duplicado"
+
+    ) {
+
+        contenido.className =
+            "panel-rfid duplicado";
+
+
+        icono.textContent =
+            "⚠";
+
+
+        nombre.textContent =
+            data.nombre ||
+            "ASISTENCIA YA REGISTRADA";
+
+
+        curso.textContent =
+            (data.curso || "")
+            +
+            (
+                data.materia
+                ? " • " + data.materia
+                : ""
+            );
+
+
+        mensaje.textContent =
+            "La asistencia ya fue registrada en esta materia";
+
+
+        horaRegistro.textContent =
+            data.hora
+            ? "Registrado a las: " + data.hora
+            : "";
+
+
+        reproducirAudio(
+            audioDuplicado
+        );
+
+    }
+
+
+    else if (
+        data.estado ===
+        "sin_clase"
+    ) {
+
+        mostrarSinClase();
+
+        return;
+
+    }
+
+
+    else {
+
+        contenido.className =
+            "panel-rfid error";
+
+
+        icono.textContent =
+            "✕";
+
+
+        nombre.textContent =
+            data.estado ===
+            "no_encontrado"
+            ? "NO REGISTRADO"
+            : "ATENCIÓN";
+
+
+        curso.textContent =
+            materiaActiva;
+
+
+        mensaje.textContent =
+            data.mensaje ||
+            "No se pudo registrar la asistencia";
+
+
+        if (data.uid) {
+
+            horaRegistro.textContent =
+                "UID: "
+                +
+                data.uid;
+
+        }
+
+        else if (data.cedula) {
+
+            horaRegistro.textContent =
+                "Cédula: "
+                +
+                data.cedula;
+
+        }
+
+        else {
+
+            horaRegistro.textContent =
+                "";
+
+        }
+
+
+        reproducirAudio(
+            audioError
+        );
+
+    }
+
+
+    temporizador =
+        setTimeout(
+
+            function() {
+
+                consultarClaseActual();
+
+            },
+
+            5000
+
+        );
+
+}
+
+
+/* ==========================================================
+   REGISTRAR POR CÉDULA
+========================================================== */
+
+formularioCedula.addEventListener(
+
+    "submit",
+
+    async function(event) {
+
+        event.preventDefault();
+
+
+        if (!claseActiva) {
+
+            mostrarSinClase();
+
+            return;
+
+        }
+
+
+        if (enviandoCedula) {
+
+            return;
+
+        }
+
+
+        const cedula =
+            inputCedula.value.trim();
+
+
+        if (!cedula) {
+
+            mostrarRegistro({
+
+                estado: "error",
+
+                mensaje:
+                    "Ingrese el número de cédula"
+
+            });
+
+            return;
+
+        }
+
+
+        if (
+            !/^\d+$/.test(
+                cedula
+            )
+        ) {
+
+            mostrarRegistro({
+
+                estado: "error",
+
+                mensaje:
+                    "La cédula debe contener solamente números"
+
+            });
+
+            return;
+
+        }
+
+
+        enviandoCedula =
+            true;
+
+
+        inputCedula.disabled =
+            true;
+
+
+        botonRegistrar.disabled =
+            true;
+
+
+        botonRegistrar.textContent =
+            "REGISTRANDO...";
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+
+                    "/api/asistencia/cedula/?cedula="
+                    +
+                    encodeURIComponent(
+                        cedula
+                    ),
+
+                    {
+                        cache: "no-store"
+                    }
+
+                );
+
+
+            const data =
+                await respuesta.json();
+
+
+            if (data.evento_id) {
+
+                ultimoEvento =
+                    data.evento_id;
+
+            }
+
+
+            mostrarRegistro(
+                data
+            );
+
+        }
+
+        catch(error) {
+
+            mostrarRegistro({
+
+                estado: "error",
+
+                mensaje:
+                    "No se pudo conectar con el servidor"
+
+            });
+
+        }
+
+    }
+
+);
+
+
+/* ==========================================================
+   RFID
+========================================================== */
 
 async function consultarEstado() {
+
+    if (!claseActiva) {
+
+        return;
+
+    }
 
 
     try {
 
+        const respuesta =
+            await fetch(
 
-        const respuesta = await fetch(
-            "/api/estado/",
-            {
-                cache: "no-store"
-            }
-        );
+                "/api/estado/",
+
+                {
+                    cache:
+                        "no-store"
+                }
+
+            );
+
+
+        if (!respuesta.ok) {
+
+            return;
+
+        }
 
 
         const data =
             await respuesta.json();
 
 
-        // Solo actuar ante una lectura nueva
-
         if (
-            data.evento_id &&
-            data.evento_id !== ultimoEvento
+            data.estado ===
+            "esperando"
         ) {
 
+            return;
+
+        }
+
+
+        if (
+            data.evento_id
+            &&
+            data.evento_id !==
+            ultimoEvento
+        ) {
 
             ultimoEvento =
                 data.evento_id;
 
 
-            if (
-                data.estado !== "esperando"
-            ) {
+            mostrarRegistro(
+                data
+            );
 
-                mostrarRegistro(
-                    data
-                );
-            }
         }
 
+    }
 
-    } catch (error) {
+    catch(error) {
 
-        console.log(
-            "Error consultando Django:",
-            error
-        );
     }
 
 }
 
 
-// Consultar aproximadamente dos veces por segundo
+/* ==========================================================
+   CONSULTAR HORARIO AUTOMÁTICO
+========================================================== */
+
+async function consultarClaseActual() {
+
+    try {
+
+        const respuesta =
+            await fetch(
+
+                "/api/clase/estado/",
+
+                {
+                    cache: "no-store"
+                }
+
+            );
+
+
+        if (!respuesta.ok) {
+
+            mostrarSinClase();
+
+            return;
+
+        }
+
+
+        const data =
+            await respuesta.json();
+
+
+        if (
+            data.activa === true
+            &&
+            data.materia
+        ) {
+
+            const cambioMateria =
+
+                !claseActiva
+
+                ||
+
+                materiaActiva !==
+                data.materia
+
+                ||
+
+                cursoActivo !==
+                data.curso;
+
+
+            claseActiva = true;
+
+            materiaActiva =
+                data.materia || "";
+
+            cursoActivo =
+                data.curso || "";
+
+            horaInicio =
+                data.hora_inicio || "";
+
+            horaFin =
+                data.hora_fin || "";
+
+
+            if (cambioMateria) {
+
+                mostrarClaseActiva(
+                    data
+                );
+
+            }
+
+        }
+
+        else {
+
+            if (claseActiva) {
+
+                mostrarSinClase();
+
+            }
+
+            else {
+
+                mostrarSinClase();
+
+            }
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Error consultando horario:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   INICIAR SISTEMA
+========================================================== */
+
+consultarClaseActual();
+
 
 setInterval(
+
     consultarEstado,
+
     700
+
 );
 
 
-consultarEstado();
+/*
+Se consulta el horario cada 15 segundos.
+Así el cambio de una materia a otra
+se realiza automáticamente.
+*/
+
+setInterval(
+
+    consultarClaseActual,
+
+    15000
+
+);
 
 
 </script>

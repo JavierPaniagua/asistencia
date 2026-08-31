@@ -1,0 +1,702 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Reporte individual de asistencia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            background: #f4f6f9;
+        }
+
+        .encabezado {
+            background: linear-gradient(
+                135deg,
+                #052b68,
+                #0b5ed7
+            );
+
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .logo {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+        }
+
+        .tarjeta-estadistica {
+            border: 0;
+            border-radius: 12px;
+        }
+
+        .numero-grande {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .estado-presente {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .estado-ausente {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .estado-pendiente {
+            color: #b58100;
+            font-weight: bold;
+        }
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .no-imprimir {
+                display: none !important;
+            }
+
+            .encabezado {
+                background: white !important;
+                color: black !important;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none !important;
+            }
+
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="encabezado mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-auto">
+
+                <img
+                    src="{% static 'asistencia/img/logo_colegio.png' %}"
+                    class="logo"
+                    alt="Logo"
+                >
+
+            </div>
+
+            <div class="col text-center">
+
+                <h5 class="mb-1">
+                    COLEGIO NACIONAL
+                </h5>
+
+                <h5>
+                    GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
+                </h5>
+
+                <h2 class="mt-3 mb-0">
+                    REPORTE INDIVIDUAL DE ASISTENCIA
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <div class="card shadow-sm mb-4 no-imprimir">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+                            Alumno
+                        </label>
+
+                        <select
+                            name="alumno"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione un alumno
+                            </option>
+
+                            {% for a in alumnos %}
+
+                                <option
+                                    value="{{ a.id }}"
+                                    {% if alumno and a.id == alumno.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ a.apellidos }},
+                                    {{ a.nombres }}
+                                    - {{ a.cedula }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Tipo de reporte
+                        </label>
+
+                        <select
+                            name="tipo"
+                            id="tipo"
+                            class="form-select"
+                        >
+
+                            <option
+                                value="mensual"
+                                {% if tipo == "mensual" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Mensual
+                            </option>
+
+                            <option
+                                value="semanal"
+                                {% if tipo == "semanal" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Semanal
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FILTRO MENSUAL
+                ================================================== -->
+
+                <div
+                    class="row g-3 mt-1"
+                    id="filtro-mensual"
+                >
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Mes
+                        </label>
+
+                        <select
+                            name="mes"
+                            class="form-select"
+                        >
+
+                            {% for numero, nombre in meses %}
+
+                                <option
+                                    value="{{ numero }}"
+                                    {% if numero == mes %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ nombre }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Año
+                        </label>
+
+                        <input
+                            type="number"
+                            name="anio"
+                            value="{{ anio }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FILTRO SEMANAL
+                ================================================== -->
+
+                <div
+                    class="row g-3 mt-1"
+                    id="filtro-semanal"
+                >
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Seleccione una fecha de la semana
+                        </label>
+
+                        <input
+                            type="date"
+                            name="fecha"
+                            value="{{ fecha_base|date:'Y-m-d' }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Consultar reporte
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if alumno %}
+
+        <!-- =================================================
+             DATOS DEL ALUMNO
+        ================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <strong>ALUMNO:</strong>
+
+                        {{ alumno.apellidos }},
+                        {{ alumno.nombres }}
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <strong>CÉDULA:</strong>
+
+                        {{ alumno.cedula }}
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <strong>CURSO:</strong>
+
+                        {{ alumno.curso }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-2">
+
+                    <div class="col">
+
+                        {% if tipo == "mensual" %}
+
+                            <strong>PERIODO:</strong>
+
+                            {{ nombre_mes }} {{ anio }}
+
+                        {% else %}
+
+                            <strong>SEMANA:</strong>
+
+                            {{ inicio_semana|date:"d/m/Y" }}
+
+                            al
+
+                            {{ fin_semana|date:"d/m/Y" }}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ESTADÍSTICAS
+        ================================================== -->
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+
+                <div class="card shadow-sm tarjeta-estadistica text-center">
+
+                    <div class="card-body">
+
+                        <div class="numero-grande">
+                            {{ presentes }}
+                        </div>
+
+                        <div>
+                            Presentes
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card shadow-sm tarjeta-estadistica text-center">
+
+                    <div class="card-body">
+
+                        <div class="numero-grande">
+                            {{ ausentes }}
+                        </div>
+
+                        <div>
+                            Ausentes
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card shadow-sm tarjeta-estadistica text-center">
+
+                    <div class="card-body">
+
+                        <div class="numero-grande">
+                            {{ pendientes }}
+                        </div>
+
+                        <div>
+                            Pendientes
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card shadow-sm tarjeta-estadistica text-center">
+
+                    <div class="card-body">
+
+                        <div class="numero-grande">
+                            {{ porcentaje }}%
+                        </div>
+
+                        <div>
+                            Asistencia
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TABLA
+        ================================================== -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>
+                                    N°
+                                </th>
+
+                                <th>
+                                    Fecha
+                                </th>
+
+                                <th>
+                                    Materia
+                                </th>
+
+                                <th>
+                                    Horario
+                                </th>
+
+                                <th>
+                                    Hora de registro
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for fila in filas %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+                                    <td>
+                                        {{ fila.fecha|date:"d/m/Y" }}
+                                    </td>
+
+                                    <td>
+                                        {{ fila.materia.nombre }}
+                                    </td>
+
+                                    <td>
+
+                                        {{ fila.hora_inicio|time:"H:i" }}
+
+                                        -
+
+                                        {{ fila.hora_fin|time:"H:i" }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if fila.hora_registro %}
+
+                                            {{ fila.hora_registro }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if fila.estado == "PRESENTE" %}
+
+                                            <span class="estado-presente">
+                                                PRESENTE
+                                            </span>
+
+                                        {% elif fila.estado == "AUSENTE" %}
+
+                                            <span class="estado-ausente">
+                                                AUSENTE
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado-pendiente">
+                                                PENDIENTE
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        class="text-center"
+                                    >
+                                        No existen clases programadas
+                                        para este período.
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BOTONES
+        ================================================== -->
+
+        <div class="mt-4 no-imprimir">
+
+            <button
+                onclick="window.print()"
+                class="btn btn-success"
+            >
+                🖨️ Imprimir reporte
+            </button>
+
+            <a
+                href="/reportes/"
+                class="btn btn-secondary"
+            >
+                ← Volver a reportes
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+
+    const tipo = document.getElementById("tipo");
+
+    const mensual =
+        document.getElementById("filtro-mensual");
+
+    const semanal =
+        document.getElementById("filtro-semanal");
+
+
+    function actualizarFiltros() {
+
+        if (tipo.value === "semanal") {
+
+            mensual.style.display = "none";
+            semanal.style.display = "flex";
+
+        } else {
+
+            mensual.style.display = "flex";
+            semanal.style.display = "none";
+
+        }
+
+    }
+
+
+    tipo.addEventListener(
+        "change",
+        actualizarFiltros
+    );
+
+
+    actualizarFiltros();
+
+</script>
+
+</body>
+
+</html>
