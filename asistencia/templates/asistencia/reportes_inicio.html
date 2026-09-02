@@ -1,116 +1,111 @@
 {% load static %}
 
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
-<title>
-    Reportes de Asistencia
-</title>
+    <title>
+        Reportes de Asistencia
+    </title>
 
-<link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-    rel="stylesheet"
->
+    <!-- =====================================================
+         BOOTSTRAP LOCAL
+    ====================================================== -->
 
-<style>
+    <link
+        rel="stylesheet"
+        href="{% static 'asistencia/bootstrap/css/bootstrap.min.css' %}"
+    >
 
-body {
+    <style>
 
-    min-height: 100vh;
+        body {
 
-    background:
-        linear-gradient(
-            135deg,
-            #00396f,
-            #0068b5
-        );
+            min-height: 100vh;
 
-    color: white;
+            background:
+                linear-gradient(
+                    135deg,
+                    #00396f,
+                    #0068b5
+                );
 
-}
-
-
-.contenedor {
-
-    max-width: 1050px;
-
-    margin: auto;
-
-    padding:
-        45px 20px;
-
-}
+            color: white;
+        }
 
 
-.logo {
+        .contenedor {
 
-    width: 90px;
+            max-width: 1050px;
 
-}
+            margin: auto;
 
-
-.titulo {
-
-    color: #ffd400;
-
-    font-weight: 900;
-
-}
+            padding:
+                45px 20px;
+        }
 
 
-.tarjeta {
+        .logo {
 
-    height: 100%;
-
-    border: none;
-
-    border-radius: 22px;
-
-    padding: 28px;
-
-    box-shadow:
-        0 12px 30px
-        rgba(0,0,0,.25);
-
-    transition: .2s;
-
-}
+            width: 90px;
+        }
 
 
-.tarjeta:hover {
+        .titulo {
 
-    transform:
-        translateY(-5px);
+            color: #ffd400;
 
-}
-
-
-.icono {
-
-    font-size: 50px;
-
-}
+            font-weight: 900;
+        }
 
 
-.btn-reporte {
+        .tarjeta {
 
-    border-radius: 12px;
+            height: 100%;
 
-    font-weight: 800;
+            border: none;
 
-}
+            border-radius: 22px;
 
-</style>
+            padding: 28px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, .25);
+
+            transition: .2s;
+        }
+
+
+        .tarjeta:hover {
+
+            transform:
+                translateY(-5px);
+        }
+
+
+        .icono {
+
+            font-size: 50px;
+        }
+
+
+        .btn-reporte {
+
+            border-radius: 12px;
+
+            font-weight: 800;
+        }
+
+    </style>
 
 </head>
 
@@ -121,166 +116,204 @@ body {
 <div class="contenedor">
 
 
-<div class="text-center mb-5">
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
 
-<img
-    src="{% static 'asistencia/img/logo_colegio.png' %}"
-    class="logo"
->
+    <div class="text-center mb-5">
 
-<h5 class="mt-3">
+        <img
+            src="{% static 'asistencia/img/logo_colegio.png' %}"
+            class="logo"
+            alt="Logo del colegio"
+        >
 
-    COLEGIO NACIONAL
+        <h5 class="mt-3">
 
-</h5>
+            COLEGIO NACIONAL
 
-<div>
+        </h5>
 
-    GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
+        <div>
 
-</div>
+            GRAL. JOSÉ ELIZARDO AQUINO - LUQUE
 
+        </div>
 
-<h1 class="titulo mt-3">
 
-    REPORTES DE ASISTENCIA
+        <h1 class="titulo mt-3">
 
-</h1>
+            REPORTES DE ASISTENCIA
 
-</div>
+        </h1>
 
+    </div>
 
-<div class="row g-4">
 
 
-<div class="col-md-4">
+    <!-- =====================================================
+         TARJETAS DE REPORTES
+    ====================================================== -->
 
-<div class="card tarjeta text-center">
+    <div class="row g-4">
 
-<div class="icono">
 
-    📅
+        <!-- =================================================
+             REPORTE POR FECHA
+        ================================================== -->
 
-</div>
+        <div class="col-md-4">
 
-<h4>
+            <div class="card tarjeta text-center">
 
-    Por fecha
+                <div class="icono">
 
-</h4>
+                    📅
 
-<p class="text-muted">
+                </div>
 
-    Presencia y ausencia de
-    todo el curso según fecha
-    y materia.
 
-</p>
+                <h4>
 
-<a
-    href="{% url 'reporte_asistencia' %}"
-    class="btn btn-primary btn-reporte mt-auto"
->
+                    Por fecha
 
-    VER REPORTE
+                </h4>
 
-</a>
 
-</div>
+                <p class="text-muted">
 
-</div>
+                    Presencia y ausencia de
+                    todo el curso según fecha
+                    y materia.
 
+                </p>
 
-<div class="col-md-4">
 
-<div class="card tarjeta text-center">
+                <a
+                    href="{% url 'reporte_asistencia' %}"
+                    class="btn btn-primary btn-reporte mt-auto"
+                >
 
-<div class="icono">
+                    VER REPORTE
 
-    📊
+                </a>
 
-</div>
+            </div>
 
-<h4>
+        </div>
 
-    Planilla mensual
 
-</h4>
 
-<p class="text-muted">
+        <!-- =================================================
+             PLANILLA MENSUAL
+        ================================================== -->
 
-    Planilla completa con
-    las fechas reales de
-    clase del mes.
+        <div class="col-md-4">
 
-</p>
+            <div class="card tarjeta text-center">
 
-<a
-    href="{% url 'reporte_mensual_curso' %}"
-    class="btn btn-warning btn-reporte mt-auto"
->
+                <div class="icono">
 
-    VER PLANILLA
+                    📊
 
-</a>
+                </div>
 
-</div>
 
-</div>
+                <h4>
 
+                    Planilla mensual
 
-<div class="col-md-4">
+                </h4>
 
-<div class="card tarjeta text-center">
 
-<div class="icono">
+                <p class="text-muted">
 
-    👤
+                    Planilla completa con
+                    las fechas reales de
+                    clase del mes.
 
-</div>
+                </p>
 
-<h4>
 
-    Reporte individual
+                <a
+                    href="{% url 'reporte_mensual_curso' %}"
+                    class="btn btn-warning btn-reporte mt-auto"
+                >
 
-</h4>
+                    VER PLANILLA
 
-<p class="text-muted">
+                </a>
 
-    Informe semanal o mensual
-    de asistencia de un alumno.
+            </div>
 
-</p>
+        </div>
 
-<a
-    href="{% url 'reporte_individual' %}"
-    class="btn btn-success btn-reporte mt-auto"
->
 
-    VER REPORTE
 
-</a>
+        <!-- =================================================
+             REPORTE INDIVIDUAL
+        ================================================== -->
 
-</div>
+        <div class="col-md-4">
 
-</div>
+            <div class="card tarjeta text-center">
 
+                <div class="icono">
 
-</div>
+                    👤
 
+                </div>
 
-<div class="text-center mt-5">
 
-<a
-    href="/pantalla/"
-    class="btn btn-outline-light"
->
+                <h4>
 
-    ← VOLVER AL SISTEMA DE ASISTENCIA
+                    Reporte individual
 
-</a>
+                </h4>
 
-</div>
+
+                <p class="text-muted">
+
+                    Informe semanal o mensual
+                    de asistencia de un alumno.
+
+                </p>
+
+
+                <a
+                    href="{% url 'reporte_individual' %}"
+                    class="btn btn-success btn-reporte mt-auto"
+                >
+
+                    VER REPORTE
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         VOLVER AL SISTEMA
+    ====================================================== -->
+
+    <div class="text-center mt-5">
+
+        <a
+            href="/pantalla/"
+            class="btn btn-outline-light"
+        >
+
+            ← VOLVER AL SISTEMA DE ASISTENCIA
+
+        </a>
+
+    </div>
 
 
 </div>
